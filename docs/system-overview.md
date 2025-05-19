@@ -32,9 +32,9 @@ TBD
 ## 2\. System Overview
 
 *   A simple analysis object model in the form of a UML class diagram
-![Analysis Object Model](./images/Analysis%20Object%20Model.png)
+![Analysis Object Model](diagrams/Analysis%20Object%20Model.png)
 *   A use case diagram
-![Use Case Diagram](./images/Use%20Case%20Diagram.png)
+![Use Case Diagram](diagrams/Use%20Case%20Diagram.png)
 *   A UML component diagram to visualize the architecture (this can be understood as the "top-level architecture diagram")
 
 You can use tools like [Apollon](https://apollon.ase.in.tum.de).
