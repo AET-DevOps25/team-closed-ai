@@ -25,4 +25,11 @@ public class UserService {
     public void delete(Long id) {
         users.deleteById(id);
     }
+
+    public User create(String name, String profilePicture) {
+        User user = new User();
+        user.setName(name);
+        user.setProfilePicture(profilePicture);
+        return users.save(user);
+    }
 }

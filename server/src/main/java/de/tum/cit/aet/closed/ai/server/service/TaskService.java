@@ -1,5 +1,6 @@
 package de.tum.cit.aet.closed.ai.server.service;
 
+import de.tum.cit.aet.closed.ai.server.exception.TaskNotFoundException;
 import de.tum.cit.aet.closed.ai.server.persistence.model.Task;
 import de.tum.cit.aet.closed.ai.server.persistence.model.TaskStatus;
 import de.tum.cit.aet.closed.ai.server.persistence.repository.TaskRepository;
@@ -43,8 +44,8 @@ public class TaskService {
     }
 
     public Task setStatus(Long taskId, TaskStatus status) {
-        Task t = tasks.findById(taskId).orElseThrow();
-        t.setStatus(status);
-        return tasks.save(t);
+        Task task = tasks.findById(taskId).orElseThrow(() -> new TaskNotFoundException("No Task found with ID " + taskId));
+        task.setStatus(status);
+        return tasks.save(task);
     }
 }

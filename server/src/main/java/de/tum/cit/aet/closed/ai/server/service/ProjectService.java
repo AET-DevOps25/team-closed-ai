@@ -28,6 +28,9 @@ public class ProjectService {
     }
 
     public void delete(Long id) {
+        if (projects.findById(id).isEmpty()) {
+            throw new ProjectNotFoundException("No project found with ID " + id);
+        }
         projects.deleteById(id);
     }
 
@@ -37,5 +40,11 @@ public class ProjectService {
         Task task = project.createTask(title, desc);
         projects.save(project);
         return task;
+    }
+
+    public Project createProject(String name) {
+        Project project = new Project();
+        project.setName(name);
+        return projects.save(project);
     }
 }

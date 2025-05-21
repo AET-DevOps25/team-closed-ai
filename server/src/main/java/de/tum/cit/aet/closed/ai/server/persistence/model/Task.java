@@ -34,7 +34,7 @@ public class Task {
     @Column(name = "attachment")
     private List<String> attachments = new ArrayList<>();
 
-    @ManyToOne(optional = true)
+    @ManyToOne()
     @JoinColumn(name = "assignee_id")
     private User assignee;
 
