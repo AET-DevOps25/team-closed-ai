@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useBoard } from "@/context/BoardContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,7 +43,10 @@ const CommentSection = ({ ticketId }: CommentSectionProps) => {
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                <AvatarImage
+                  src={comment.author.avatar}
+                  alt={comment.author.name}
+                />
                 <AvatarFallback>
                   {comment.author.name
                     .split(" ")
@@ -56,7 +58,10 @@ const CommentSection = ({ ticketId }: CommentSectionProps) => {
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{comment.author.name}</span>
                   <span className="text-xs text-gray-500">
-                    {format(new Date(comment.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                    {format(
+                      new Date(comment.createdAt),
+                      "MMM d, yyyy 'at' h:mm a",
+                    )}
                   </span>
                 </div>
                 <div className="mt-1 text-gray-700">{comment.content}</div>
@@ -71,7 +76,10 @@ const CommentSection = ({ ticketId }: CommentSectionProps) => {
       <div className="pt-4 border-t">
         <div className="flex gap-3">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={commentAuthor?.avatar} alt={commentAuthor?.name} />
+            <AvatarImage
+              src={commentAuthor?.avatar}
+              alt={commentAuthor?.name}
+            />
             <AvatarFallback>
               {commentAuthor?.name
                 .split(" ")

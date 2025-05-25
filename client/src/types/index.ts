@@ -1,5 +1,4 @@
-
-export type TicketState = "OPEN" | "IN_PROGRESS" | "CLOSED";
+export type TicketState = "BACKLOG" | "OPEN" | "IN_PROGRESS" | "CLOSED";
 
 export interface User {
   id: string;

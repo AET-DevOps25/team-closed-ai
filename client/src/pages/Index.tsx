@@ -1,4 +1,3 @@
-
 import Board from "@/components/Board";
 import { BoardProvider } from "@/context/BoardContext";
 

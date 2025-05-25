@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogContent,
@@ -31,7 +30,11 @@ const getStateColor = (state: string) => {
   }
 };
 
-const ViewTicketDialog = ({ isOpen, onClose, ticketId }: ViewTicketDialogProps) => {
+const ViewTicketDialog = ({
+  isOpen,
+  onClose,
+  ticketId,
+}: ViewTicketDialogProps) => {
   const { getTicketById } = useBoard();
   const ticket = getTicketById(ticketId);
 
@@ -56,7 +59,10 @@ const ViewTicketDialog = ({ isOpen, onClose, ticketId }: ViewTicketDialogProps) 
                 <span className="font-medium text-gray-700">Assignee:</span>
                 <div className="flex items-center gap-1.5">
                   <Avatar className="w-6 h-6">
-                    <AvatarImage src={ticket.assignee.avatar} alt={ticket.assignee.name} />
+                    <AvatarImage
+                      src={ticket.assignee.avatar}
+                      alt={ticket.assignee.name}
+                    />
                     <AvatarFallback>
                       {ticket.assignee.name
                         .split(" ")
@@ -89,7 +95,11 @@ const ViewTicketDialog = ({ isOpen, onClose, ticketId }: ViewTicketDialogProps) 
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-700">Description</h3>
             <div className="p-3 bg-gray-50 rounded-md whitespace-pre-wrap">
-              {ticket.description || <span className="text-gray-400 italic">No description provided</span>}
+              {ticket.description || (
+                <span className="text-gray-400 italic">
+                  No description provided
+                </span>
+              )}
             </div>
           </div>
 
