@@ -17,4 +17,4 @@ RUN poetry config virtualenvs.create false \
 EXPOSE 8000
 
 # Run the application
-CMD ["uvicorn", "genai.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "recommender_service.main:app", "--host", "0.0.0.0", "--port", "8000"]

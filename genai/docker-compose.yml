@@ -1,0 +1,7 @@
+services:
+  recommender-service:
+    build:
+      context: ./recommender-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
