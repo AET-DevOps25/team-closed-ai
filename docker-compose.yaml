@@ -1,0 +1,11 @@
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "8080:8080"
+    volumes:
+      - server_data:/app/serverdb
+
+volumes:
+  server_data:
