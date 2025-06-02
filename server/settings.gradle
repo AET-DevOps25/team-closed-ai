@@ -1,1 +1,6 @@
-rootProject.name = 'server'
+rootProject.name = 'closed-ai-server'
+
+include 'user-service'
+include 'project-service'
+include 'task-service'
+include 'common'
