@@ -1,29 +1,30 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import Index from "./pages/Index";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter, Routes, Route } from "react-router";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { ProjectProvider } from "@/context/ProjectContext";
+import BoardPage from "./pages/BoardPage";
 import NotFound from "./pages/NotFound";
-import { BrowserRouter, Route, Routes } from "react-router";
-import { TooltipProvider } from "@/components/ui/tooltip.tsx";
-import { SidebarProvider } from "@/components/ui/sidebar.tsx";
-import { AppSidebar } from "@/components/AppSidebar.tsx";
 
-function App() {
-  return (
-    <TooltipProvider>
-      <Sonner />
+const App = () => (
+  <TooltipProvider>
+    <Sonner />
+    <ProjectProvider>
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
         <main className="flex-1">
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<BoardPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </main>
       </SidebarProvider>
-    </TooltipProvider>
-  );
-}
+    </ProjectProvider>
+  </TooltipProvider>
+);
 
 export default App;
