@@ -1,10 +1,7 @@
 name: Build and Push Docker Images
 
 on:
-  workflow_run:
-    workflows: ["Test Project"]
-    types:
-      - completed
+  push:
 
 jobs:
   build-server:
