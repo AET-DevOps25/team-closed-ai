@@ -1,7 +1,10 @@
 name: build.yml
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Test Project"]
+    types:
+      - completed
 
 jobs:
   build-server:
@@ -46,7 +49,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         platforms: linux/amd64,linux/arm64
-        context: ./server/${{ matrix.service }}-service
+        context: ./server
         file: ./server/${{ matrix.service }}-service/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
