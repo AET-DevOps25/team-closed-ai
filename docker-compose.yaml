@@ -1,12 +1,28 @@
 services:
+  traefik:
+    image: traefik:v3.4.1
+    container_name: traefik
+    ports:
+      - "80:80"    # HTTP entrypoint
+      - "8080:8080"  # dashboard (insecure)
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   project-service:
     build:
       context: ./server
       dockerfile: project-service/Dockerfile
-    ports:
-      - "8083:8083"
+    expose:
+      - "8083"
     depends_on:
       - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project.rule=PathPrefix(`/projects`)"
+      - "traefik.http.services.project.loadbalancer.server.port=8083"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -17,10 +33,14 @@ services:
     build:
       context: ./server
       dockerfile: user-service/Dockerfile
-    ports:
-      - "8082:8082"
+    expose:
+      - "8082"
     depends_on:
       - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=PathPrefix(`/users`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -31,16 +51,19 @@ services:
     build:
       context: ./server
       dockerfile: task-service/Dockerfile
-    ports:
-      - "8081:8081"
+    expose:
+      - "8081"
     depends_on:
       - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.task.rule=PathPrefix(`/tasks`)"
+      - "traefik.http.services.task.loadbalancer.server.port=8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-
 
   postgres:
     image: postgres:16
