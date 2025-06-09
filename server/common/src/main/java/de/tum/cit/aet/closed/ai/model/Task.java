@@ -22,7 +22,7 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TaskStatus status = TaskStatus.OPEN;
+    private TaskStatus status = TaskStatus.BACKLOG;
 
     @ElementCollection
     @CollectionTable(name = "task_comments", joinColumns = @JoinColumn(name = "task_id"))

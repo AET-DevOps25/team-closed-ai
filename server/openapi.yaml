@@ -330,7 +330,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserDto'
+              $ref: '#/components/schemas/CreateUserDto'
       responses:
         '200':
           description: The created user
@@ -473,6 +473,8 @@ components:
           type: string
         description:
           type: string
+        taskStatus:
+          type: string
       required:
         - title
         - description
@@ -492,9 +494,20 @@ components:
         - name
         - profilePicture
 
+    CreateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+        profilePicture:
+          type: string
+      required:
+        - name
+
     TaskStatus:
       type: string
       enum:
+        - BACKLOG
         - OPEN
         - IN_PROGRESS
         - DONE

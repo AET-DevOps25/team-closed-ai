@@ -4,6 +4,7 @@ package de.tum.cit.aet.closed.ai;
 import de.tum.cit.aet.closed.ai.exception.ProjectNotFoundException;
 import de.tum.cit.aet.closed.ai.model.Project;
 import de.tum.cit.aet.closed.ai.model.Task;
+import de.tum.cit.aet.closed.ai.model.TaskStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +41,10 @@ public class ProjectService {
     }
 
     @Transactional
-    public Task createTask(Long projectId, String title, String desc) {
+    public Task createTask(Long projectId, String title, String desc, TaskStatus taskStatus) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("No such project"));
-        project.createTask(title, desc);
+        project.createTask(title, desc, taskStatus);
         return projectRepository.findById(projectId)
                 .map(p -> p.getTasks().getLast())
                 .orElseThrow(() -> new ProjectNotFoundException("No such project"));

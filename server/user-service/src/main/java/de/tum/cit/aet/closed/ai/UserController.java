@@ -1,5 +1,6 @@
 package de.tum.cit.aet.closed.ai;
 
+import de.tum.cit.aet.closed.ai.dto.CreateUserDto;
 import de.tum.cit.aet.closed.ai.dto.UserDto;
 
 import de.tum.cit.aet.closed.ai.exception.UserNotFoundException;
@@ -29,8 +30,8 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@RequestBody UserDto userDto) {
-        return UserDto.fromUser(userService.create(userDto.name(), userDto.profilePicture()));
+    public UserDto create(@RequestBody CreateUserDto createUserDto) {
+        return UserDto.fromUser(userService.create(createUserDto.name(), createUserDto.profilePicture()));
     }
 
     @PutMapping("/{id}")

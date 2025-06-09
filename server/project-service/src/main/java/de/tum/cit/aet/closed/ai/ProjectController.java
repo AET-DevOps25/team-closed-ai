@@ -53,6 +53,6 @@ public class ProjectController {
 
     @PostMapping("/{id}/tasks")
     public TaskDto addTask(@PathVariable Long id, @RequestBody AddTaskDto addTaskDto) {
-        return TaskDto.fromTask(projectService.createTask(id, addTaskDto.title(), addTaskDto.description()));
+        return TaskDto.fromTask(projectService.createTask(id, addTaskDto.title(), addTaskDto.description(), addTaskDto.taskStatus()));
     }
 }

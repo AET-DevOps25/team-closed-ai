@@ -2,6 +2,7 @@ package de.tum.cit.aet.closed.ai;
 
 import de.tum.cit.aet.closed.ai.model.Project;
 import de.tum.cit.aet.closed.ai.model.Task;
+import de.tum.cit.aet.closed.ai.model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -192,18 +193,19 @@ public class ProjectControllerTest {
     @Test
     void addTask_WhenProjectExists_ShouldReturnCreatedTask() throws Exception {
         // Mock service method
-        when(projectService.createTask(eq(1L), anyString(), anyString())).thenReturn(testTask);
+        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.BACKLOG))).thenReturn(testTask);
 
         // Perform POST request and validate response
         mockMvc.perform(post("/projects/1/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Test Task\",\"description\":\"Test Description\"}"))
+                .content("{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"BACKLOG\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.title", is("Test Task")))
-                .andExpect(jsonPath("$.description", is("Test Description")));
+                .andExpect(jsonPath("$.description", is("Test Description")))
+                .andExpect(jsonPath("$.taskStatus", is("BACKLOG")));
 
         // Verify service method was called
-        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"));
+        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG));
     }
 }

@@ -27,10 +27,11 @@ public class Project {
     private List<Task> tasks = new ArrayList<>();
 
     // convenience
-    public Task createTask(String title, String desc) {
+    public Task createTask(String title, String desc, TaskStatus taskStatus) {
         Task t = new Task();
         t.setTitle(title);
         t.setDescription(desc);
+        t.setStatus(taskStatus);
         t.setProject(this);
         tasks.add(t);
         return t;
