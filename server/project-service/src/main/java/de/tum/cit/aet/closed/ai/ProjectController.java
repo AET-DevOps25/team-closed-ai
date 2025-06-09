@@ -8,6 +8,7 @@ import de.tum.cit.aet.closed.ai.dto.TaskDto;
 import de.tum.cit.aet.closed.ai.exception.ProjectNotFoundException;
 import de.tum.cit.aet.closed.ai.model.Project;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public List<ProjectDto> all() {
         return projectService.findAll().stream()
                 .map(ProjectDto::fromProject)
