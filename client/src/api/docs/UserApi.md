@@ -1,6 +1,6 @@
 # UserApi
 
-All URIs are relative to *http://localhost:8083*
+All URIs are relative to *http://localhost:80*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
@@ -11,7 +11,7 @@ All URIs are relative to *http://localhost:8083*
 |[**updateUser**](#updateuser) | **PUT** /users/{id} | Update a user|
 
 # **createUser**
-> UserDto createUser(userDto)
+> UserDto createUser(createUserDto)
 
 
 ### Example
@@ -20,16 +20,16 @@ All URIs are relative to *http://localhost:8083*
 import {
     UserApi,
     Configuration,
-    UserDto
+    CreateUserDto
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new UserApi(configuration);
 
-let userDto: UserDto; //
+let createUserDto: CreateUserDto; //
 
 const { status, data } = await apiInstance.createUser(
-    userDto
+    createUserDto
 );
 ```
 
@@ -37,7 +37,7 @@ const { status, data } = await apiInstance.createUser(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **userDto** | **UserDto**|  | |
+| **createUserDto** | **CreateUserDto**|  | |
 
 
 ### Return type

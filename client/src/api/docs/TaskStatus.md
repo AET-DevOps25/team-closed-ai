@@ -3,6 +3,8 @@
 
 ## Enum
 
+* `Backlog` (value: `'BACKLOG'`)
+
 * `Open` (value: `'OPEN'`)
 
 * `InProgress` (value: `'IN_PROGRESS'`)

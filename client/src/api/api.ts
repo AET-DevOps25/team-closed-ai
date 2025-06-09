@@ -41,6 +41,12 @@ export interface AddTaskDto {
      * @memberof AddTaskDto
      */
     'description': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AddTaskDto
+     */
+    'taskStatus'?: string;
 }
 /**
  * 
@@ -54,6 +60,25 @@ export interface CreateProjectDto {
      * @memberof CreateProjectDto
      */
     'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateUserDto
+ */
+export interface CreateUserDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateUserDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateUserDto
+     */
+    'profilePicture'?: string;
 }
 /**
  * 
@@ -138,6 +163,7 @@ export interface TaskDto {
  */
 
 export const TaskStatus = {
+    Backlog: 'BACKLOG',
     Open: 'OPEN',
     InProgress: 'IN_PROGRESS',
     Done: 'DONE'
@@ -1181,13 +1207,13 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Create a new user
-         * @param {UserDto} userDto 
+         * @param {CreateUserDto} createUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser: async (userDto: UserDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userDto' is not null or undefined
-            assertParamExists('createUser', 'userDto', userDto)
+        createUser: async (createUserDto: CreateUserDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createUserDto' is not null or undefined
+            assertParamExists('createUser', 'createUserDto', createUserDto)
             const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1207,7 +1233,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(userDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createUserDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1365,12 +1391,12 @@ export const UserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Create a new user
-         * @param {UserDto} userDto 
+         * @param {CreateUserDto} createUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUser(userDto: UserDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(userDto, options);
+        async createUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(createUserDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.createUser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1440,12 +1466,12 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Create a new user
-         * @param {UserDto} userDto 
+         * @param {CreateUserDto} createUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(userDto: UserDto, options?: RawAxiosRequestConfig): AxiosPromise<UserDto> {
-            return localVarFp.createUser(userDto, options).then((request) => request(axios, basePath));
+        createUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<UserDto> {
+            return localVarFp.createUser(createUserDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1500,13 +1526,13 @@ export class UserApi extends BaseAPI {
     /**
      * 
      * @summary Create a new user
-     * @param {UserDto} userDto 
+     * @param {CreateUserDto} createUserDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    public createUser(userDto: UserDto, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).createUser(userDto, options).then((request) => request(this.axios, this.basePath));
+    public createUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).createUser(createUserDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

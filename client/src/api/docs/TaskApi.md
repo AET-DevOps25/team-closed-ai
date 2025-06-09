@@ -1,6 +1,6 @@
 # TaskApi
 
-All URIs are relative to *http://localhost:8083*
+All URIs are relative to *http://localhost:80*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|

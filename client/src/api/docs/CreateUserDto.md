@@ -1,23 +1,21 @@
-# AddTaskDto
+# CreateUserDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **string** |  | [default to undefined]
-**description** | **string** |  | [default to undefined]
-**taskStatus** | **string** |  | [optional] [default to undefined]
+**name** | **string** |  | [default to undefined]
+**profilePicture** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
 ```typescript
-import { AddTaskDto } from './api';
+import { CreateUserDto } from './api';
 
-const instance: AddTaskDto = {
-    title,
-    description,
-    taskStatus,
+const instance: CreateUserDto = {
+    name,
+    profilePicture,
 };
 ```
 

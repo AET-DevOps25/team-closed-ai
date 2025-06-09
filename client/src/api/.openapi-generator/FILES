@@ -1,12 +1,12 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 base.ts
 common.ts
 configuration.ts
 docs/AddTaskDto.md
 docs/CreateProjectDto.md
+docs/CreateUserDto.md
 docs/ProjectApi.md
 docs/ProjectDto.md
 docs/TaskApi.md
