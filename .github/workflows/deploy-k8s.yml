@@ -1,0 +1,48 @@
+name: Deploy to Chair's Kubernetes cluster
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: AWS
+      url: 'https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy Docker Compose File From Repo to VM Host
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.EC2_PUBLIC_IP }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
+          source: "./docker-compose.yml"
+          target: /home/${{ vars.AWS_EC2_USER }}
+
+      - name: SSH to VM and Create .env.prod
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.EC2_PUBLIC_IP }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
+          script: |
+            rm .env.prod
+            touch .env.prod
+            echo "CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
+            echo "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
+            echo "PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io/api" >> .env.prod
+
+      - name: SSH to VM and Execute Docker-Compose Up
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.EC2_PUBLIC_IP }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
+          script: |
+            echo "Logging into Docker registry..."
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "Starting Docker Compose..."
+            docker compose -f compose.aws.yml --env-file=.env.prod up --pull=always -d
