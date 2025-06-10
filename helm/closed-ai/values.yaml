@@ -1,0 +1,53 @@
+# Global settings
+global:
+  postgresql:
+    auth:
+      username: postgres
+      password: postgres
+      database: closedai
+
+# Services configuration
+services:
+  traefik:
+    enabled: true
+    image:
+      repository: traefik
+      tag: v3.4.1
+    ports:
+      - name: http
+        port: 80
+      - name: dashboard
+        port: 8080
+
+  project-service:
+    enabled: true
+    image:
+      repository: ghcr.io/aet-devops25/team-closed-ai/project-service
+      tag: latest
+    port: 8083
+    path: /projects
+
+  user-service:
+    enabled: true
+    image:
+      repository: ghcr.io/aet-devops25/team-closed-ai/user-service
+      tag: latest
+    port: 8082
+    path: /users
+
+  task-service:
+    enabled: true
+    image:
+      repository: ghcr.io/aet-devops25/team-closed-ai/task-service
+      tag: latest
+    port: 8081
+    path: /tasks
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16"
+  persistence:
+    enabled: true
+    size: 1Gi

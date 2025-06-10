@@ -1,0 +1,18 @@
+{{- range $service, $config := .Values.services }}
+{{- if ne $service "traefik" }}
+{{- if $config.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $service | lower }}
+spec:
+  selector:
+    app: {{ $.Release.Name }}-{{ $service | lower }}
+  ports:
+    - port: {{ $config.port }}
+      targetPort: {{ $config.port }}
+  type: ClusterIP
+{{- end }}
+{{- end }}
+{{- end }}

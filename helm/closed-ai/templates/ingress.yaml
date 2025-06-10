@@ -1,0 +1,24 @@
+{{- if .Values.services.traefik.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  namespace: closed-ai-prod
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - http:
+        paths:
+        {{- range $service, $config := .Values.services }}
+        {{- if and (ne $service "traefik") $config.enabled }}
+          - path: {{ $config.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Release.Name }}-{{ $service | lower }}
+                port:
+                  number: {{ $config.port }}
+        {{- end }}
+        {{- end }}
+{{- end -}}
