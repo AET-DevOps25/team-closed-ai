@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-task-service
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-task-service
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}-task-service
+    spec:
+      containers:
+        - name: task-service
+          image: "{{ $.Values.services.task.image.repository }}:{{ $.Values.services.task.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.services.task.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ $.Release.Name }}-config
+            - secretRef:
+                name: {{ $.Release.Name }}-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-task-service
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $.Release.Name }}-task-service
+  ports:
+    - port: {{ $.Values.services.task.port }}
+      targetPort: {{ $.Values.services.task.port }}
+  type: ClusterIP

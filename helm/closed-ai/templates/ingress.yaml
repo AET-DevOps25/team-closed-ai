@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
-  namespace: closed-ai-prod
+  namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: traefik
 spec:
