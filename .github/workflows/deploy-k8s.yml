@@ -6,43 +6,30 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: AWS
-      url: 'https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io'
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy Docker Compose File From Repo to VM Host
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ vars.EC2_PUBLIC_IP }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
-          source: "./docker-compose.yml"
-          target: /home/${{ vars.AWS_EC2_USER }}
+      - name: Set up Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
-      - name: SSH to VM and Create .env.prod
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.EC2_PUBLIC_IP }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
-          script: |
-            rm .env.prod
-            touch .env.prod
-            echo "CLIENT_HOST=client.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
-            echo "SERVER_HOST=api.${{ vars.EC2_PUBLIC_IP }}.nip.io" >> .env.prod
-            echo "PUBLIC_API_URL=https://api.${{ vars.EC2_PUBLIC_IP }}.nip.io/api" >> .env.prod
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.3.0
 
-      - name: SSH to VM and Execute Docker-Compose Up
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.EC2_PUBLIC_IP }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}
-          script: |
-            echo "Logging into Docker registry..."
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo "Starting Docker Compose..."
-            docker compose -f compose.aws.yml --env-file=.env.prod up --pull=always -d
+      - name: Deploy with Helm
+        run: |
+          helm upgrade closed-ai ./helm-chart \
+            --install \
+            --namespace closed-ai \
+            --create-namespace \
+            --set global.postgresql.auth.username=$DB_USERNAME \
+            --set global.postgresql.auth.password=$DB_PASSWORD \
+            --set global.postgresql.auth.database=$DB_NAME \
+            --set postgresql.auth.username=$DB_USERNAME \
+            --set postgresql.auth.password=$DB_PASSWORD \
+            --set postgresql.auth.database=$DB_NAME
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
