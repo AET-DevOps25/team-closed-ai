@@ -5,4 +5,4 @@ metadata:
   namespace: {{ $.Values.namespace }}
 data:
   SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
-  SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.global.postgresql.auth.database }}
+  SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-postgres:5432/{{ .Values.global.postgresql.auth.database }}

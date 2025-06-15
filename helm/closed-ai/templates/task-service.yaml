@@ -17,6 +17,7 @@ spec:
       containers:
         - name: task-service
           image: "{{ $.Values.services.task.image.repository }}:{{ $.Values.services.task.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.services.task.port }}
           envFrom:

@@ -1,14 +1,24 @@
-{{- if .Values.services.traefik.enabled -}}
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
   namespace: {{ .Values.namespace }}
+  {{- $annotations := .Values.ingress.annotations | default dict }}
+  {{- if $annotations }}
   annotations:
-    kubernetes.io/ingress.class: traefik
+      {{- toYaml $annotations | nindent 4 }}
+  {{- end }}
 spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - "{{ $.Values.namespace }}.student.k8s.aet.cit.tum.de"
+      secretName: "{{ $.Values.namespace }}-tls"
+  {{- end }}
   rules:
-    - http:
+    - host: "{{ $.Values.namespace }}.student.k8s.aet.cit.tum.de"
+      http:
         paths:
         {{- range $service, $config := .Values.services }}
         {{- if and (ne $service "traefik") $config.enabled }}
@@ -16,7 +26,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $.Release.Name }}-{{ $service | lower }}
+                name: {{ $.Release.Name }}-{{ $service }}-service
                 port:
                   number: {{ $config.port }}
         {{- end }}

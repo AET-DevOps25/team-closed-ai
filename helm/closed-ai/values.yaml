@@ -1,26 +1,22 @@
-namespace: closed-ai-prod
+namespace: closed-ai
 
 # Global settings
 global:
   postgresql:
     auth:
-      username: postgres
-      password: postgres
-      database: closedai
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      database: ${DB_NAME}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  tls: true
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
 # Services configuration
 services:
-  traefik:
-    enabled: true
-    image:
-      repository: traefik
-      tag: v3.4.1
-    ports:
-      - name: http
-        port: 80
-      - name: dashboard
-        port: 8080
-
   project:
     enabled: true
     image:
@@ -47,9 +43,13 @@ services:
 
 postgresql:
   enabled: true
+  auth:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    database: ${DB_NAME}
   image:
     repository: postgres
     tag: "16"
   persistence:
     enabled: true
-    size: 1Gi
+    size: 2Gi
