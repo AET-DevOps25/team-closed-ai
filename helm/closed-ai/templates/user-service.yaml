@@ -17,6 +17,7 @@ spec:
       containers:
         - name: user-service
           image: "{{ $.Values.services.user.image.repository }}:{{ $.Values.services.user.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.services.user.port }}
           envFrom:

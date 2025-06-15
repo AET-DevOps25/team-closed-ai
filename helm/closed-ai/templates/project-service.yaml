@@ -16,9 +16,10 @@ spec:
     spec:
       containers:
         - name: project-service
-          image: "{{ $.Values.services.task.image.repository }}:{{ $.Values.services.task.image.tag }}"
+          image: "{{ $.Values.services.project.image.repository }}:{{ $.Values.services.project.image.tag }}"
+          imagePullPolicy: Always
           ports:
-            - containerPort: {{ .Values.services.task.port }}
+            - containerPort: {{ .Values.services.project.port }}
           envFrom:
             - configMapRef:
                 name: {{ $.Release.Name }}-config
@@ -35,6 +36,6 @@ spec:
   selector:
     app: {{ $.Release.Name }}-project-service
   ports:
-    - port: {{ $.Values.services.task.port }}
-      targetPort: {{ $.Values.services.task.port }}
+    - port: {{ $.Values.services.project.port }}
+      targetPort: {{ $.Values.services.project.port }}
   type: ClusterIP
