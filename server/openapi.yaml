@@ -4,14 +4,7 @@ info:
   description: API documentation for the DevOps Closed AI Server
   version: 1.0.0
 servers:
-  - url: http://localhost:8083
-    description: Project Service
-  - url: http://localhost:8082
-    description: Task Service
-  - url: http://localhost:8081
-    description: User Service
-  - url: http://localhost
-    description: Docker deployment
+  - url: http://localhost:80
 
 tags:
   - Project
