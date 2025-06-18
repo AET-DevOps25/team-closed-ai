@@ -76,5 +76,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  genai:
+    build:
+      context: ./genai
+      dockerfile: Dockerfile
+    env_file:
+      - ./genai/.env
+    expose:
+      - "8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
+      - "traefik.http.services.genai.loadbalancer.server.port=8000"
+
 volumes:
   postgres_data:
