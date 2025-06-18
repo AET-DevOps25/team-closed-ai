@@ -12,7 +12,9 @@ dependencies = [
     "uvicorn[standard] (>=0.34.3,<0.35.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "pydantic (>=2.11.7,<3.0.0)",
-    "server-api @ ./server_api"
+    "server-api @ ./server_api",
+    "langchain (>=0.3.25,<0.4.0)",
+    "langchain-ollama (>=0.3.3,<0.4.0)"
 ]
 
 

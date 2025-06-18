@@ -1,11 +1,14 @@
 import os
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 
 from server_api import ProjectApi, Configuration, ApiClient
 from server_api.models.project_dto import ProjectDto
+
+from app.llm_services.categorization_service import categorize_request
+from pydantic import BaseModel
 
 app = FastAPI(
     title="GenAI Service",
@@ -35,6 +38,23 @@ async def interact(
             yield f"{response}\n"
 
     return StreamingResponse(streamer, media_type="application/json")
+
+
+class RequestBody(BaseModel):
+    request: str
+
+
+class ResponseBody(BaseModel):
+    category: str
+
+
+@app.post("/categorize", response_model=ResponseBody)
+async def categorize_endpoint(body: RequestBody):
+    try:
+        category = await categorize_request(body.request)
+        return ResponseBody(category=category)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/projects", response_model=list[ProjectDto])
