@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **string** |  | [default to undefined]
+**color** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -14,6 +15,7 @@ import { CreateProjectDto } from './api';
 
 const instance: CreateProjectDto = {
     name,
+    color,
 };
 ```
 

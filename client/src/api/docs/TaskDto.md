@@ -9,6 +9,8 @@ Name | Type | Description | Notes
 **title** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **taskStatus** | [**TaskStatus**](TaskStatus.md) |  | [default to undefined]
+**createdAt** | **string** |  | [default to undefined]
+**updatedAt** | **string** |  | [default to undefined]
 **comments** | **Array&lt;string&gt;** |  | [default to undefined]
 **attachments** | **Array&lt;string&gt;** |  | [default to undefined]
 **assigneeId** | **number** |  | [optional] [default to undefined]
@@ -23,6 +25,8 @@ const instance: TaskDto = {
     title,
     description,
     taskStatus,
+    createdAt,
+    updatedAt,
     comments,
     attachments,
     assigneeId,

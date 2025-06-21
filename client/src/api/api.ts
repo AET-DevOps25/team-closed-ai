@@ -43,11 +43,13 @@ export interface AddTaskDto {
     'description': string;
     /**
      * 
-     * @type {string}
+     * @type {TaskStatus}
      * @memberof AddTaskDto
      */
-    'taskStatus'?: string;
+    'taskStatus'?: TaskStatus;
 }
+
+
 /**
  * 
  * @export
@@ -60,6 +62,12 @@ export interface CreateProjectDto {
      * @memberof CreateProjectDto
      */
     'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateProjectDto
+     */
+    'color': string;
 }
 /**
  * 
@@ -100,6 +108,24 @@ export interface ProjectDto {
     'name': string;
     /**
      * 
+     * @type {string}
+     * @memberof ProjectDto
+     */
+    'color': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProjectDto
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProjectDto
+     */
+    'updatedAt': string;
+    /**
+     * 
      * @type {Array<number>}
      * @memberof ProjectDto
      */
@@ -135,6 +161,18 @@ export interface TaskDto {
      * @memberof TaskDto
      */
     'taskStatus': TaskStatus;
+    /**
+     * 
+     * @type {string}
+     * @memberof TaskDto
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TaskDto
+     */
+    'updatedAt': string;
     /**
      * 
      * @type {Array<string>}
@@ -196,6 +234,18 @@ export interface UserDto {
      * @memberof UserDto
      */
     'profilePicture': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDto
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDto
+     */
+    'updatedAt': string;
 }
 
 /**

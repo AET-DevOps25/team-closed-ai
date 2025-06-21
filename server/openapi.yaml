@@ -416,6 +416,14 @@ components:
           format: int64
         name:
           type: string
+        color:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         taskIds:
           type: array
           items:
@@ -424,6 +432,9 @@ components:
       required:
         - id
         - name
+        - color
+        - createdAt
+        - updatedAt
         - taskIds
 
     CreateProjectDto:
@@ -431,8 +442,11 @@ components:
       properties:
         name:
           type: string
+        color:
+          type: string
       required:
         - name
+        - color
 
     TaskDto:
       type: object
@@ -446,6 +460,12 @@ components:
           type: string
         taskStatus:
           $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         comments:
           type: array
           items:
@@ -463,6 +483,8 @@ components:
         - title
         - description
         - taskStatus
+        - createdAt
+        - updatedAt
         - comments
         - attachments
 
@@ -489,10 +511,18 @@ components:
           type: string
         profilePicture:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       required:
         - id
         - name
         - profilePicture
+        - createdAt
+        - updatedAt
 
     CreateUserDto:
       type: object

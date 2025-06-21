@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
-**taskStatus** | **string** |  | [optional] [default to undefined]
+**taskStatus** | [**TaskStatus**](TaskStatus.md) |  | [optional] [default to undefined]
 
 ## Example
 
