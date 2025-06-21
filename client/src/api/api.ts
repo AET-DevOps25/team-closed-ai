@@ -47,6 +47,12 @@ export interface AddTaskDto {
      * @memberof AddTaskDto
      */
     'taskStatus'?: TaskStatus;
+    /**
+     * 
+     * @type {number}
+     * @memberof AddTaskDto
+     */
+    'assigneeId'?: number;
 }
 
 

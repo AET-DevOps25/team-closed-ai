@@ -4,15 +4,15 @@ package de.tum.cit.aet.closed.ai.dto;
 import de.tum.cit.aet.closed.ai.model.Project;
 import de.tum.cit.aet.closed.ai.model.Task;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public record ProjectDto(
         Long id,
         String name,
         String color,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        Instant createdAt,
+        Instant updatedAt,
         List<Long> taskIds
 ) {
     public static ProjectDto fromProject(Project project) {

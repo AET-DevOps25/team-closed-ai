@@ -40,6 +40,7 @@ public class ProjectControllerTest {
     private Project testProject2;
     private List<Project> projectList;
     private Task testTask;
+    private Task testTaskWithOpenStatus;
 
     @BeforeEach
     void setUp() {
@@ -66,6 +67,14 @@ public class ProjectControllerTest {
         testTask.setDescription("Test Description");
         testTask.setProject(testProject1);
         testProject1.getTasks().add(testTask);
+
+        // Create test task with OPEN status
+        testTaskWithOpenStatus = new Task();
+        testTaskWithOpenStatus.setId(1L);
+        testTaskWithOpenStatus.setTitle("Test Task");
+        testTaskWithOpenStatus.setDescription("Test Description");
+        testTaskWithOpenStatus.setStatus(TaskStatus.OPEN);
+        testTaskWithOpenStatus.setProject(testProject1);
 
         projectList = Arrays.asList(testProject1, testProject2);
     }
@@ -195,7 +204,7 @@ public class ProjectControllerTest {
     @Test
     void addTask_WhenProjectExists_ShouldReturnCreatedTask() throws Exception {
         // Mock service method
-        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.BACKLOG))).thenReturn(testTask);
+        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.BACKLOG), eq(null))).thenReturn(testTask);
 
         // Perform POST request and validate response
         mockMvc.perform(post("/projects/1/tasks")
@@ -208,6 +217,25 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.taskStatus", is("BACKLOG")));
 
         // Verify service method was called
-        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG));
+        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG), eq(null));
+    }
+
+    @Test
+    void addTask_WithAssignee_WhenProjectExists_ShouldReturnCreatedTask() throws Exception {
+        // Mock service method
+        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.OPEN), eq(2L))).thenReturn(testTaskWithOpenStatus);
+
+        // Perform POST request and validate response
+        mockMvc.perform(post("/projects/1/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"OPEN\",\"assigneeId\":2}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.title", is("Test Task")))
+                .andExpect(jsonPath("$.description", is("Test Description")))
+                .andExpect(jsonPath("$.taskStatus", is("OPEN")));
+
+        // Verify service method was called
+        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.OPEN), eq(2L));
     }
 }

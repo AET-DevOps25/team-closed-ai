@@ -497,6 +497,10 @@ components:
           type: string
         taskStatus:
           $ref: '#/components/schemas/TaskStatus'
+        assigneeId:
+          type: integer
+          format: int64
+          nullable: true
       required:
         - title
         - description

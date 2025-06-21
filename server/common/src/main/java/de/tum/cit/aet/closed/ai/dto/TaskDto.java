@@ -4,6 +4,7 @@ import de.tum.cit.aet.closed.ai.model.Task;
 import de.tum.cit.aet.closed.ai.model.TaskStatus;
 import de.tum.cit.aet.closed.ai.model.User;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +14,8 @@ public record TaskDto(
         String title,
         String description,
         TaskStatus taskStatus,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        Instant createdAt,
+        Instant updatedAt,
         List<String> comments,
         List<String> attachments,
         Long assigneeId

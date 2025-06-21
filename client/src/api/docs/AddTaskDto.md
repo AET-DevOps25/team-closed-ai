@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **title** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **taskStatus** | [**TaskStatus**](TaskStatus.md) |  | [optional] [default to undefined]
+**assigneeId** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -18,6 +19,7 @@ const instance: AddTaskDto = {
     title,
     description,
     taskStatus,
+    assigneeId,
 };
 ```
 
