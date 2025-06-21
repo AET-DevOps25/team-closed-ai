@@ -51,6 +51,7 @@ public class ProjectControllerTest {
         testProject1 = new Project();
         testProject1.setId(1L);
         testProject1.setName("Test Project 1");
+        testProject1.setColor("#3070B3");
         testProject1.setTasks(new ArrayList<>());
 
         testProject2 = new Project();
@@ -123,19 +124,20 @@ public class ProjectControllerTest {
     @Test
     void createProject_ShouldReturnCreatedProject() throws Exception {
         // Mock service method
-        when(projectService.createProject(anyString())).thenReturn(testProject1);
+        when(projectService.createProject(anyString(), anyString())).thenReturn(testProject1);
 
         // Perform POST request and validate response
         mockMvc.perform(post("/projects")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Test Project 1\"}"))
+                .content("{\"name\":\"Test Project 1\",\"color\":\"#3070B3\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Test Project 1")))
+                .andExpect(jsonPath("$.color", is("#3070B3")))
                 .andExpect(jsonPath("$.taskIds", hasSize(1)));
 
         // Verify service method was called
-        verify(projectService, times(1)).createProject("Test Project 1");
+        verify(projectService, times(1)).createProject("Test Project 1", "#3070B3");
     }
 
     @Test

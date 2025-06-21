@@ -1,6 +1,7 @@
 package de.tum.cit.aet.closed.ai;
 
 
+import de.tum.cit.aet.closed.ai.dto.CreateProjectDto;
 import de.tum.cit.aet.closed.ai.exception.ProjectNotFoundException;
 import de.tum.cit.aet.closed.ai.model.Project;
 import de.tum.cit.aet.closed.ai.model.Task;
@@ -51,9 +52,10 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(String name) {
+    public Project createProject(String name, String color) {
         Project project = new Project();
         project.setName(name);
+        project.setColor(color);
         return projectRepository.save(project);
     }
 }

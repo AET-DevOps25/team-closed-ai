@@ -7,6 +7,7 @@ import de.tum.cit.aet.closed.ai.dto.ProjectDto;
 import de.tum.cit.aet.closed.ai.dto.TaskDto;
 import de.tum.cit.aet.closed.ai.exception.ProjectNotFoundException;
 import de.tum.cit.aet.closed.ai.model.Project;
+import de.tum.cit.aet.closed.ai.model.TaskStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class ProjectController {
 
     @PostMapping
     public ProjectDto create(@RequestBody CreateProjectDto createProjectDto) {
-        Project project = projectService.createProject(createProjectDto.name());
+        Project project = projectService.createProject(createProjectDto.name(), createProjectDto.color());
         return ProjectDto.fromProject(project);
     }
 

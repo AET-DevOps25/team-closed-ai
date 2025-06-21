@@ -474,7 +474,7 @@ components:
         description:
           type: string
         taskStatus:
-          type: string
+          $ref: '#/components/schemas/TaskStatus'
       required:
         - title
         - description
