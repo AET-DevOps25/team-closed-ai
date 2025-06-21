@@ -20,15 +20,23 @@ docker compose up --build -d
 
 ## Development without Docker
 
-Use the following command to start the application:
+Create a `.env.development` and `.env.production` from the respective example files.
+
+To run the client and use the locally running server:
 
 ```
-npm run dev
+npm run dev:local
+```
+
+To run the client and use the deployed server:
+
+```
+npm run dev:prod
 ```
 
 ## OpenAPI Client Generation
 
-To generate/update the clients for the server, use the following command:
+To generate/update the clients for the server, use the following command in the client directory:
 
 ```
 openapi-generator generate -i ../server/openapi.yaml -o src/api -g typescript-axios --skip-validate-spec
