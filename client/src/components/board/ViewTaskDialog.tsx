@@ -8,13 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { useBoard } from "@/context/BoardContext";
-import CommentSection from "@/components/CommentSection";
 import { Paperclip, Calendar } from "lucide-react";
 
-interface ViewTicketDialogProps {
+interface ViewTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  ticketId: string;
+  taskId: number;
 }
 
 const getStateColor = (state: string) => {
@@ -30,47 +29,48 @@ const getStateColor = (state: string) => {
   }
 };
 
-const ViewTicketDialog = ({
-  isOpen,
-  onClose,
-  ticketId,
-}: ViewTicketDialogProps) => {
-  const { getTicketById } = useBoard();
-  const ticket = getTicketById(ticketId);
+const ViewTaskDialog = ({ isOpen, onClose, taskId }: ViewTaskDialogProps) => {
+  const { getTaskById } = useBoard();
+  const task = getTaskById(taskId);
 
-  if (!ticket) return null;
+  if (!task) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
-          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-            <DialogTitle className="text-xl">{ticket.title}</DialogTitle>
-            <Badge className={`text-sm w-fit ${getStateColor(ticket.state)}`}>
-              {ticket.state.replace("_", " ")}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <DialogTitle className="text-xl">{task.title}</DialogTitle>
+            <Badge
+              className={`text-sm w-fit ${getStateColor(task.taskStatus)}`}
+            >
+              {task.taskStatus.replace("_", " ")}
             </Badge>
           </div>
         </DialogHeader>
 
         <div className="mt-2 space-y-6">
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-            {ticket.assignee && (
+            {task.assignee && (
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-700">Assignee:</span>
                 <div className="flex items-center gap-1.5">
                   <Avatar className="w-6 h-6">
                     <AvatarImage
-                      src={ticket.assignee.avatar}
-                      alt={ticket.assignee.name}
+                      src={task.assignee.profilePicture}
+                      alt={task.assignee.name}
                     />
                     <AvatarFallback>
-                      {ticket.assignee.name
+                      {task.assignee.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <span>{ticket.assignee.name}</span>
+                  <span>{task.assignee.name}</span>
                 </div>
               </div>
             )}
@@ -78,15 +78,17 @@ const ViewTicketDialog = ({
               <span className="font-medium text-gray-700">Created:</span>
               <div className="flex items-center gap-1.5">
                 <Calendar size={16} />
-                <span>{format(new Date(ticket.createdAt), "MMM d, yyyy")}</span>
+                <span>
+                  {format(new Date(task.createdAt), "MMM d, yyyy HH:mm")}
+                </span>
               </div>
             </div>
-            {ticket.attachments.length > 0 && (
+            {task.attachments.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-700">Attachments:</span>
                 <div className="flex items-center gap-1.5">
                   <Paperclip size={16} />
-                  <span>{ticket.attachments.length}</span>
+                  <span>{task.attachments.length}</span>
                 </div>
               </div>
             )}
@@ -95,16 +97,12 @@ const ViewTicketDialog = ({
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-700">Description</h3>
             <div className="p-3 bg-gray-50 rounded-md whitespace-pre-wrap">
-              {ticket.description || (
+              {task.description || (
                 <span className="text-gray-400 italic">
                   No description provided
                 </span>
               )}
             </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <CommentSection ticketId={ticket.id} />
           </div>
         </div>
       </DialogContent>
@@ -112,4 +110,4 @@ const ViewTicketDialog = ({
   );
 };
 
-export default ViewTicketDialog;
+export default ViewTaskDialog;

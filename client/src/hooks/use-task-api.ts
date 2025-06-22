@@ -1,12 +1,10 @@
-import React, { useState, useCallback } from "react";
-import { ProjectApi, TaskApi, type TaskDto, TaskStatus } from "../api/api";
+import { useState, useCallback } from "react";
+import { TaskApi, type TaskDto, TaskStatus } from "../api/api";
 import { type ApiState, createInitialApiState } from "../types/api";
 import { Configuration } from "@/api/configuration";
+import { useApi } from "./use-api";
 
 const taskApi = new TaskApi(
-  new Configuration({ basePath: import.meta.env.VITE_API_URL }),
-);
-const projectApi = new ProjectApi(
   new Configuration({ basePath: import.meta.env.VITE_API_URL }),
 );
 
@@ -29,6 +27,8 @@ interface TaskApiHook {
 }
 
 export const useTaskApi = (): TaskApiHook => {
+  const { handleApiCall, handleVoidApiCall } = useApi();
+
   const [tasks, setTasks] = useState<ApiState<TaskDto[]>>(
     createInitialApiState,
   );
@@ -40,46 +40,16 @@ export const useTaskApi = (): TaskApiHook => {
     createInitialApiState,
   );
 
-  const handleApiCall = async <T>(
-    apiCall: () => Promise<{ data: T }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<T>>>,
-  ): Promise<T | null> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      const response = await apiCall();
-      const data = response.data;
-      setState({ data, loading: false, error: null });
-      return data;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return null;
-    }
-  };
-
-  const handleVoidApiCall = async (
-    apiCall: () => Promise<{ data: void }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<any>>>,
-  ): Promise<boolean> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      await apiCall();
-      setState((prev) => ({ ...prev, loading: false, error: null }));
-      return true;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return false;
-    }
-  };
-
   const getAllTasks = useCallback(async () => {
     await handleApiCall(() => taskApi.getAllTasks(), setTasks);
-  }, []);
+  }, [handleApiCall]);
 
-  const getTaskById = useCallback(async (id: number) => {
-    await handleApiCall(() => taskApi.getTaskById(id), setTask);
-  }, []);
+  const getTaskById = useCallback(
+    async (id: number) => {
+      await handleApiCall(() => taskApi.getTaskById(id), setTask);
+    },
+    [handleApiCall],
+  );
 
   const updateTask = useCallback(
     async (id: number, data: TaskDto) => {
@@ -91,7 +61,7 @@ export const useTaskApi = (): TaskApiHook => {
         await getAllTasks();
       }
     },
-    [getAllTasks],
+    [handleApiCall, getAllTasks],
   );
 
   const deleteTask = useCallback(
@@ -104,7 +74,7 @@ export const useTaskApi = (): TaskApiHook => {
         await getAllTasks();
       }
     },
-    [getAllTasks],
+    [handleVoidApiCall, getAllTasks],
   );
 
   const changeTaskStatus = useCallback(
@@ -115,22 +85,28 @@ export const useTaskApi = (): TaskApiHook => {
       );
       return result; // Return result instead of auto-refetching
     },
-    [],
+    [handleApiCall],
   );
 
-  const getTasksByAssignee = useCallback(async (assigneeId: number) => {
-    await handleApiCall(
-      () => taskApi.getTasksByAssignee(assigneeId),
-      setTasksByAssignee,
-    );
-  }, []);
+  const getTasksByAssignee = useCallback(
+    async (assigneeId: number) => {
+      await handleApiCall(
+        () => taskApi.getTasksByAssignee(assigneeId),
+        setTasksByAssignee,
+      );
+    },
+    [handleApiCall],
+  );
 
-  const getTasksByProject = useCallback(async (projectId: number) => {
-    await handleApiCall(
-      () => taskApi.getTasksByProject(projectId),
-      setTasksByProject,
-    );
-  }, []);
+  const getTasksByProject = useCallback(
+    async (projectId: number) => {
+      await handleApiCall(
+        () => taskApi.getTasksByProject(projectId),
+        setTasksByProject,
+      );
+    },
+    [handleApiCall],
+  );
 
   const clearErrors = useCallback(() => {
     setTasks((prev) => ({ ...prev, error: null }));

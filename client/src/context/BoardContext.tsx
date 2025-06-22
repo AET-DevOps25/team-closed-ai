@@ -1,186 +1,192 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import type { Ticket, User, Comment, Attachment, TicketState } from "@/types";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import type { Task, TaskStatus } from "@/types";
+import { useTaskApi } from "@/hooks/use-task-api";
+import { useProjectApi } from "@/hooks/use-project-api";
+import { useUser } from "./UserContext";
+import { useProject } from "@/context/ProjectContext";
+import type { TaskDto } from "@/api/api";
+import { mapTaskDtoToTask } from "@/utils/type-mappers";
 
 interface BoardContextType {
-  tickets: Ticket[];
-  users: User[];
-  addTicket: (
-    ticket: Omit<Ticket, "id" | "comments" | "attachments" | "createdAt">,
-  ) => void;
-  updateTicket: (id: string, updates: Partial<Ticket>) => void;
-  moveTicket: (ticketId: string, newState: TicketState) => void;
-  addComment: (ticketId: string, content: string, author: User) => void;
-  addAttachment: (ticketId: string, attachment: Omit<Attachment, "id">) => void;
-  getTicketById: (id: string) => Ticket | undefined;
+  tasks: Task[];
+  loading: boolean;
+  error: string | null;
+  addTask: (
+    task: Omit<
+      Task,
+      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
+    >,
+  ) => Promise<void>;
+  updateTask: (id: number, updates: Partial<Task>) => Promise<void>;
+  moveTask: (taskId: number, newState: TaskStatus) => Promise<void>;
+  getTaskById: (id: number) => Task | undefined;
+  refetch: () => Promise<void>;
 }
-
-const defaultUsers: User[] = [
-  {
-    id: "1",
-    name: "Alex Johnson",
-    avatar: "https://ui-avatars.com/api/?name=Alex+Johnson",
-  },
-  {
-    id: "2",
-    name: "Jamie Smith",
-    avatar: "https://ui-avatars.com/api/?name=Jamie+Smith",
-  },
-  {
-    id: "3",
-    name: "Taylor Brown",
-    avatar: "https://ui-avatars.com/api/?name=Taylor+Brown",
-  },
-];
-
-const defaultTickets: Ticket[] = [
-  {
-    id: "0",
-    title: "Setup project repository",
-    description:
-      "Initialize the project with proper folder structure and dependencies",
-    state: "BACKLOG",
-    assignee: undefined,
-    comments: [],
-    attachments: [],
-    createdAt: new Date(Date.now() - 432000000),
-  },
-  {
-    id: "1",
-    title: "Implement drag and drop",
-    description: "Add the ability to drag tickets between columns",
-    state: "OPEN",
-    assignee: defaultUsers[0],
-    comments: [
-      {
-        id: "c1",
-        content: "Let's use react-beautiful-dnd for this",
-        author: defaultUsers[1],
-        createdAt: new Date(Date.now() - 86400000),
-      },
-    ],
-    attachments: [],
-    createdAt: new Date(Date.now() - 172800000),
-  },
-  {
-    id: "2",
-    title: "Create ticket view modal",
-    description: "Design and implement the ticket details view",
-    state: "IN_PROGRESS",
-    assignee: defaultUsers[1],
-    comments: [],
-    attachments: [],
-    createdAt: new Date(Date.now() - 259200000),
-  },
-  {
-    id: "3",
-    title: "Design board layout",
-    description: "Create the UI for the kanban board",
-    state: "CLOSED",
-    assignee: defaultUsers[2],
-    comments: [
-      {
-        id: "c2",
-        content: "I've completed the initial design",
-        author: defaultUsers[2],
-        createdAt: new Date(Date.now() - 43200000),
-      },
-    ],
-    attachments: [],
-    createdAt: new Date(Date.now() - 345600000),
-  },
-];
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined);
 
 export const BoardProvider = ({ children }: { children: ReactNode }) => {
-  const [tickets, setTickets] = useState<Ticket[]>(defaultTickets);
-  const [users] = useState<User[]>(defaultUsers);
+  const taskApi = useTaskApi();
+  const projectApi = useProjectApi();
+  const { selectedProject } = useProject();
+  const { users } = useUser();
 
-  const addTicket = (
-    ticketData: Omit<Ticket, "id" | "comments" | "attachments" | "createdAt">,
-  ) => {
-    const newTicket: Ticket = {
-      ...ticketData,
-      id: `ticket-${Date.now()}`,
-      comments: [],
-      attachments: [],
-      createdAt: new Date(),
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (selectedProject) {
+          await taskApi.getTasksByProject(selectedProject.id);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
     };
-    setTickets([...tickets, newTicket]);
+
+    fetchData();
+  }, [selectedProject]);
+
+  useEffect(() => {
+    const tasksData = taskApi.tasksByProject.data || taskApi.tasks.data;
+
+    if (tasksData) {
+      if (users.length > 0) {
+        // TODO: fix this
+        const mappedTasks = tasksData.map((task) =>
+          mapTaskDtoToTask(task, users),
+        );
+        setTasks(mappedTasks);
+      } else {
+        const tasksWithoutAssignees = tasksData.map((task) =>
+          mapTaskDtoToTask(task, []),
+        );
+        setTasks(tasksWithoutAssignees);
+      }
+    }
+  }, [taskApi.tasksByProject.data, taskApi.tasks.data, users]);
+
+  useEffect(() => {
+    const isLoading = taskApi.tasksByProject.loading || taskApi.tasks.loading;
+    const hasError = taskApi.tasksByProject.error || taskApi.tasks.error;
+
+    setLoading(isLoading);
+    setError(hasError);
+  }, [
+    taskApi.tasksByProject.loading,
+    taskApi.tasksByProject.error,
+    taskApi.tasks.loading,
+    taskApi.tasks.error,
+  ]);
+
+  const refetch = async () => {
+    if (selectedProject) {
+      await taskApi.getTasksByProject(selectedProject.id);
+    }
   };
 
-  const updateTicket = (id: string, updates: Partial<Ticket>) => {
-    setTickets(
-      tickets.map((ticket) =>
-        ticket.id === id ? { ...ticket, ...updates } : ticket,
-      ),
-    );
-  };
-
-  const moveTicket = (ticketId: string, newState: TicketState) => {
-    setTickets(
-      tickets.map((ticket) =>
-        ticket.id === ticketId ? { ...ticket, state: newState } : ticket,
-      ),
-    );
-  };
-
-  const addComment = (ticketId: string, content: string, author: User) => {
-    setTickets(
-      tickets.map((ticket) => {
-        if (ticket.id === ticketId) {
-          const newComment: Comment = {
-            id: `comment-${Date.now()}`,
-            content,
-            author,
-            createdAt: new Date(),
-          };
-          return {
-            ...ticket,
-            comments: [...ticket.comments, newComment],
-          };
-        }
-        return ticket;
-      }),
-    );
-  };
-
-  const addAttachment = (
-    ticketId: string,
-    attachmentData: Omit<Attachment, "id">,
+  const addTask = async (
+    taskData: Omit<
+      Task,
+      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
+    >,
   ) => {
-    setTickets(
-      tickets.map((ticket) => {
-        if (ticket.id === ticketId) {
-          const newAttachment: Attachment = {
-            id: `attachment-${Date.now()}`,
-            ...attachmentData,
-          };
-          return {
-            ...ticket,
-            attachments: [...ticket.attachments, newAttachment],
-          };
-        }
-        return ticket;
-      }),
-    );
+    try {
+      if (!selectedProject) {
+        throw new Error("No project selected");
+      }
+
+      await projectApi.addTaskToProject(selectedProject.id, {
+        title: taskData.title,
+        description: taskData.description,
+        taskStatus: taskData.taskStatus,
+        assigneeId: taskData.assignee?.id,
+      });
+
+      await taskApi.getTasksByProject(selectedProject.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add task");
+    }
   };
 
-  const getTicketById = (id: string) => {
-    return tickets.find((ticket) => ticket.id === id);
+  const updateTask = async (id: number, updates: Partial<Task>) => {
+    try {
+      const existingTask = taskApi.tasks.data?.find((task) => task.id === id);
+
+      if (!existingTask) {
+        throw new Error("Task not found");
+      }
+
+      const updatedTask: TaskDto = {
+        ...existingTask,
+        title: updates.title ?? existingTask.title,
+        description: updates.description ?? existingTask.description,
+        taskStatus: updates.taskStatus
+          ? updates.taskStatus
+          : existingTask.taskStatus,
+        assigneeId: updates.assignee
+          ? updates.assignee.id
+          : existingTask.assigneeId,
+      };
+
+      await taskApi.updateTask(id, updatedTask);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update task");
+    }
+  };
+
+  const moveTask = async (taskId: number, newState: TaskStatus) => {
+    const originalTasks = [...tasks];
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === taskId ? { ...task, taskStatus: newState } : task,
+      ),
+    );
+
+    try {
+      const result = await taskApi.changeTaskStatus(taskId, newState);
+
+      if (result) {
+        setTasks((currentTasks) =>
+          currentTasks.map((task) =>
+            task.id === taskId ? mapTaskDtoToTask(result, users) : task,
+          ),
+        );
+      }
+    } catch (err) {
+      setTasks(originalTasks);
+      setError(err instanceof Error ? err.message : "Failed to move task");
+    }
+  };
+
+  const getTaskById = (id: number) => {
+    return tasks.find((task) => task.id === id);
   };
 
   return (
     <BoardContext.Provider
       value={{
-        tickets,
-        users,
-        addTicket,
-        updateTicket,
-        moveTicket,
-        addComment,
-        addAttachment,
-        getTicketById,
+        tasks,
+        loading,
+        error,
+        addTask,
+        updateTask,
+        moveTask,
+        getTaskById,
+        refetch,
       }}
     >
       {children}

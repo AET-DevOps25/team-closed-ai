@@ -1,4 +1,4 @@
-import Board from "@/components/Board";
+import Board from "@/components/board/Board";
 import { BoardProvider } from "@/context/BoardContext";
 import { useProject } from "@/context/ProjectContext";
 

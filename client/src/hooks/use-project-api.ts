@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   ProjectApi,
   type ProjectDto,
@@ -8,6 +8,7 @@ import {
 } from "../api/api";
 import { Configuration } from "../api/configuration";
 import { type ApiState, createInitialApiState } from "../types/api";
+import { useApi } from "./use-api";
 
 const projectApi = new ProjectApi(
   new Configuration({ basePath: import.meta.env.VITE_API_URL }),
@@ -31,6 +32,8 @@ interface ProjectApiHook {
 }
 
 export const useProjectApi = (): ProjectApiHook => {
+  const { handleApiCall, handleVoidApiCall } = useApi();
+
   const [projects, setProjects] = useState<ApiState<ProjectDto[]>>(
     createInitialApiState,
   );
@@ -44,46 +47,16 @@ export const useProjectApi = (): ProjectApiHook => {
     createInitialApiState,
   );
 
-  const handleApiCall = async <T>(
-    apiCall: () => Promise<{ data: T }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<T>>>,
-  ): Promise<T | null> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      const response = await apiCall();
-      const data = response.data;
-      setState({ data, loading: false, error: null });
-      return data;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return null;
-    }
-  };
-
-  const handleVoidApiCall = async (
-    apiCall: () => Promise<{ data: void }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<any>>>,
-  ): Promise<boolean> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      await apiCall();
-      setState((prev) => ({ ...prev, loading: false, error: null }));
-      return true;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return false;
-    }
-  };
-
   const getAllProjects = useCallback(async () => {
     await handleApiCall(() => projectApi.getAllProjects(), setProjects);
-  }, []);
+  }, [handleApiCall]);
 
-  const getProjectById = useCallback(async (id: number) => {
-    await handleApiCall(() => projectApi.getProjectById(id), setProject);
-  }, []);
+  const getProjectById = useCallback(
+    async (id: number) => {
+      await handleApiCall(() => projectApi.getProjectById(id), setProject);
+    },
+    [handleApiCall],
+  );
 
   const createProject = useCallback(
     async (data: CreateProjectDto) => {
@@ -95,7 +68,7 @@ export const useProjectApi = (): ProjectApiHook => {
         await getAllProjects();
       }
     },
-    [getAllProjects],
+    [handleApiCall, getAllProjects],
   );
 
   const updateProject = useCallback(
@@ -108,7 +81,7 @@ export const useProjectApi = (): ProjectApiHook => {
         await getAllProjects();
       }
     },
-    [getAllProjects],
+    [handleApiCall, getAllProjects],
   );
 
   const deleteProject = useCallback(
@@ -121,7 +94,7 @@ export const useProjectApi = (): ProjectApiHook => {
         await getAllProjects();
       }
     },
-    [getAllProjects],
+    [handleVoidApiCall, getAllProjects],
   );
 
   const addTaskToProject = useCallback(
@@ -131,7 +104,7 @@ export const useProjectApi = (): ProjectApiHook => {
         setCreatedTask,
       );
     },
-    [],
+    [handleApiCall],
   );
 
   const clearErrors = useCallback(() => {

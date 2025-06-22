@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { UserApi, type UserDto, type CreateUserDto } from "../api/api";
 import { type ApiState, createInitialApiState } from "../types/api";
 import { Configuration } from "@/api/configuration";
+import { useApi } from "./use-api";
 
 const userApi = new UserApi(
   new Configuration({ basePath: import.meta.env.VITE_API_URL }),
@@ -23,6 +24,8 @@ interface UserApiHook {
 }
 
 export const useUserApi = (): UserApiHook => {
+  const { handleApiCall, handleVoidApiCall } = useApi();
+
   const [users, setUsers] = useState<ApiState<UserDto[]>>(
     createInitialApiState,
   );
@@ -31,46 +34,16 @@ export const useUserApi = (): UserApiHook => {
     createInitialApiState,
   );
 
-  const handleApiCall = async <T>(
-    apiCall: () => Promise<{ data: T }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<T>>>,
-  ): Promise<T | null> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      const response = await apiCall();
-      const data = response.data;
-      setState({ data, loading: false, error: null });
-      return data;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return null;
-    }
-  };
-
-  const handleVoidApiCall = async (
-    apiCall: () => Promise<{ data: void }>,
-    setState: React.Dispatch<React.SetStateAction<ApiState<any>>>,
-  ): Promise<boolean> => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      await apiCall();
-      setState((prev) => ({ ...prev, loading: false, error: null }));
-      return true;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "An error occurred";
-      setState((prev) => ({ ...prev, loading: false, error }));
-      return false;
-    }
-  };
-
   const getAllUsers = useCallback(async () => {
     await handleApiCall(() => userApi.getAllUsers(), setUsers);
-  }, []);
+  }, [handleApiCall]);
 
-  const getUserById = useCallback(async (id: number) => {
-    await handleApiCall(() => userApi.getUserById(id), setUser);
-  }, []);
+  const getUserById = useCallback(
+    async (id: number) => {
+      await handleApiCall(() => userApi.getUserById(id), setUser);
+    },
+    [handleApiCall],
+  );
 
   const createUser = useCallback(
     async (data: CreateUserDto) => {
@@ -82,7 +55,7 @@ export const useUserApi = (): UserApiHook => {
         await getAllUsers();
       }
     },
-    [getAllUsers],
+    [handleApiCall, getAllUsers],
   );
 
   const updateUser = useCallback(
@@ -95,7 +68,7 @@ export const useUserApi = (): UserApiHook => {
         await getAllUsers();
       }
     },
-    [getAllUsers],
+    [handleApiCall, getAllUsers],
   );
 
   const deleteUser = useCallback(
@@ -108,7 +81,7 @@ export const useUserApi = (): UserApiHook => {
         await getAllUsers();
       }
     },
-    [getAllUsers],
+    [handleVoidApiCall, getAllUsers],
   );
 
   const clearErrors = useCallback(() => {

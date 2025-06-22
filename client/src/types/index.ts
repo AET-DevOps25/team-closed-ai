@@ -1,31 +1,6 @@
-export type TicketState = "BACKLOG" | "OPEN" | "IN_PROGRESS" | "CLOSED";
-
-export interface User {
-  id: string;
-  name: string;
-  avatar?: string;
-}
-
-export interface Comment {
-  id: string;
-  content: string;
-  author: User;
-  createdAt: Date;
-}
-
-export interface Attachment {
-  id: string;
-  name: string;
-  url: string;
-}
-
-export interface Ticket {
-  id: string;
-  title: string;
-  description: string;
-  state: TicketState;
-  assignee?: User;
-  comments: Comment[];
-  attachments: Attachment[];
-  createdAt: Date;
-}
+export type { Task } from "./task";
+export type { User } from "./user";
+export type { Project } from "./project";
+export type { Comment } from "./comment";
+export type { Attachment } from "./attachment";
+export type { TaskStatus } from "../api/api";
