@@ -66,7 +66,7 @@ services:
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
 
   postgres:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     ports:
       - "5432:5432"
     environment:

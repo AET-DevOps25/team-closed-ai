@@ -1,16 +1,15 @@
 FROM python:3.11-slim
-WORKDIR /app
+WORKDIR /
 
-COPY pyproject.toml poetry.lock ./
-COPY server_api/ ./server_api/
+COPY openapi_client openapi_client
 
-RUN pip install poetry==2.1.2
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-root --no-interaction --no-ansi
-
-COPY app/ ./app
 COPY .env .env
 
-EXPOSE 8000
+COPY scripts scripts
+
+COPY app app
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
