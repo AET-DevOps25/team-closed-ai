@@ -4,15 +4,7 @@ info:
   description: API documentation for the DevOps Closed AI Server
   version: 1.0.0
 servers:
-  - url: http://localhost:8083
-    description: Project Service
-  - url: http://localhost:8082
-    description: Task Service
-  - url: http://localhost:8081
-    description: User Service
-  - url: http://localhost
-    description: Docker deployment
-
+  - url: http://localhost:80
 tags:
   - Project
   - Task
@@ -338,7 +330,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserDto'
+              $ref: '#/components/schemas/CreateUserDto'
       responses:
         '200':
           description: The created user
@@ -424,6 +416,14 @@ components:
           format: int64
         name:
           type: string
+        color:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         taskIds:
           type: array
           items:
@@ -432,6 +432,9 @@ components:
       required:
         - id
         - name
+        - color
+        - createdAt
+        - updatedAt
         - taskIds
 
     CreateProjectDto:
@@ -439,8 +442,11 @@ components:
       properties:
         name:
           type: string
+        color:
+          type: string
       required:
         - name
+        - color
 
     TaskDto:
       type: object
@@ -454,6 +460,12 @@ components:
           type: string
         taskStatus:
           $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         comments:
           type: array
           items:
@@ -471,6 +483,8 @@ components:
         - title
         - description
         - taskStatus
+        - createdAt
+        - updatedAt
         - comments
         - attachments
 
@@ -481,6 +495,12 @@ components:
           type: string
         description:
           type: string
+        taskStatus:
+          $ref: '#/components/schemas/TaskStatus'
+        assigneeId:
+          type: integer
+          format: int64
+          nullable: true
       required:
         - title
         - description
@@ -495,14 +515,33 @@ components:
           type: string
         profilePicture:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       required:
         - id
         - name
         - profilePicture
+        - createdAt
+        - updatedAt
+
+    CreateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+        profilePicture:
+          type: string
+      required:
+        - name
 
     TaskStatus:
       type: string
       enum:
+        - BACKLOG
         - OPEN
         - IN_PROGRESS
         - DONE

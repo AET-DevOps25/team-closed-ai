@@ -7,31 +7,29 @@ import {
 import { Draggable } from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Paperclip } from "lucide-react";
-import { format } from "date-fns";
-import type { Ticket as TicketType } from "@/types";
-import ViewTicketDialog from "@/components/ViewTicketDialog";
+import type { Task as TaskType } from "@/types";
+import ViewTaskDialog from "@/components/board/ViewTaskDialog";
 import type { JSX } from "react/jsx-runtime";
 
-interface TicketProps {
-  ticket: TicketType;
+interface TaskCardProps {
+  task: TaskType;
   index: number;
 }
 
 const getStateColor = (state: string) => {
   switch (state) {
     case "OPEN":
-      return "bg-blue-100 text-blue-800";
+      return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
     case "IN_PROGRESS":
-      return "bg-amber-100 text-amber-800";
-    case "CLOSED":
-      return "bg-green-100 text-green-800";
+      return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
+    case "DONE":
+      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
   }
 };
 
-const Ticket = ({ ticket, index }: TicketProps) => {
+const TaskCard = ({ task, index }: TaskCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const openDialog = () => setIsDialogOpen(true);
@@ -39,7 +37,7 @@ const Ticket = ({ ticket, index }: TicketProps) => {
 
   return (
     <>
-      <Draggable draggableId={ticket.id} index={index}>
+      <Draggable draggableId={task.id} index={index}>
         {(
           provided: {
             innerRef: LegacyRef<HTMLDivElement> | undefined;
@@ -56,49 +54,43 @@ const Ticket = ({ ticket, index }: TicketProps) => {
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={`p-4 mb-3 bg-white rounded-lg shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow ${
+            className={`p-4 mb-3 bg-white dark:bg-gray-900/90 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow ${
               snapshot.isDragging ? "shadow-lg" : ""
             }`}
             onClick={openDialog}
           >
             <div className="flex justify-between items-start mb-2">
-              <h3 className="font-medium leading-tight">{ticket.title}</h3>
+              <h3 className="font-medium leading-tight text-gray-900 dark:text-gray-100">
+                {task.title}
+              </h3>
               <Badge
                 variant="secondary"
-                className={`text-xs ${getStateColor(ticket.state)}`}
+                className={`text-xs ${getStateColor(task.taskStatus)}`}
               >
-                {ticket.state.replace("_", " ")}
+                {task.taskStatus.replace("_", " ")}
               </Badge>
             </div>
 
-            <p className="text-sm text-gray-500 line-clamp-2 mb-3">
-              {ticket.description}
+            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+              {task.description}
             </p>
 
-            <div className="flex justify-between items-center pt-2 text-xs text-gray-500">
-              <div className="flex items-center">
-                <div className="mr-3 flex items-center">
-                  <MessageSquare size={14} className="mr-1" />
-                  {ticket.comments.length}
-                </div>
-                <div className="flex items-center">
-                  <Paperclip size={14} className="mr-1" />
-                  {ticket.attachments.length}
-                </div>
-              </div>
-
+            <div className="flex justify-between items-center pt-2 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center">
                 <span className="mr-2">
-                  {format(new Date(ticket.createdAt), "MMM d")}
+                  {new Date(task.createdAt).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </span>
-                {ticket.assignee && (
+                {task.assignee && (
                   <Avatar className="w-6 h-6">
                     <AvatarImage
-                      src={ticket.assignee.avatar}
-                      alt={ticket.assignee.name}
+                      src={task.assignee.profilePicture}
+                      alt={task.assignee.name}
                     />
                     <AvatarFallback>
-                      {ticket.assignee.name
+                      {task.assignee.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -111,13 +103,13 @@ const Ticket = ({ ticket, index }: TicketProps) => {
         )}
       </Draggable>
 
-      <ViewTicketDialog
+      <ViewTaskDialog
         isOpen={isDialogOpen}
         onClose={closeDialog}
-        ticketId={ticket.id}
+        taskId={task.id}
       />
     </>
   );
 };
 
-export default Ticket;
+export default TaskCard;

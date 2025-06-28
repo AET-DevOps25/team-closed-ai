@@ -1,92 +1,111 @@
-import { LayoutDashboard, Settings, FileText } from "lucide-react";
-import { UserProfileFooter } from "@/components/UserProfileFooter";
-
+import { useState } from "react";
+import { Plus, RefreshCw, AlertCircle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Projects",
-    url: "/projects",
-    icon: FileText,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useProject } from "@/context/ProjectContext";
+import CreateProjectDialog from "./projects/CreateProjectDialog";
+import ProjectCard from "./projects/ProjectCard";
+import { ModeToggle } from "./ModeToggle";
+import { UserProfileFooter } from "./users/UserProfileFooter";
 
 export function AppSidebar() {
-  // TODO: Replace with actual auth state
-  const isAuthenticated = true;
+  const { projects, selectedProject, loading, error, selectProject, refetch } =
+    useProject();
 
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://ui-avatars.com/api/?name=John+Doe",
-  };
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-  const handleSignIn = () => {
-    // TODO: Implement sign in
-    console.log("Sign in clicked");
-  };
-
-  const handleSignOut = () => {
-    // TODO: Implement sign out
-    console.log("Sign out clicked");
+  const handleRefresh = async () => {
+    await refetch();
   };
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <h1 className="text-2xl font-bold text-center">
-          <a href="/" className="hover:opacity-80 transition-opacity">
-            ClosedAI
-          </a>
-        </h1>
+        <div className="relative">
+          <h1 className="text-2xl font-bold text-center">
+            <a href="/" className="hover:opacity-80 transition-opacity">
+              ClosedAI
+            </a>
+          </h1>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <ModeToggle />
+          </div>
+        </div>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
+          <div className="flex items-center justify-between px-2">
+            <SidebarGroupLabel>Projects</SidebarGroupLabel>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={handleRefresh}
+                disabled={loading}
+              >
+                <RefreshCw
+                  size={14}
+                  className={loading ? "animate-spin" : ""}
+                />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
+                <Plus size={14} />
+              </Button>
+            </div>
+          </div>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            {error && (
+              <Alert className="mx-2 mb-3" variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {loading ? (
+              <div className="flex items-center justify-center p-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span>Loading projects...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 p-2">
+                {projects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    isSelected={selectedProject?.id === project.id}
+                    onSelect={selectProject}
+                  />
+                ))}
+              </div>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <UserProfileFooter
-          isAuthenticated={isAuthenticated}
-          user={user}
-          onSignIn={handleSignIn}
-          onSignOut={handleSignOut}
-        />
+        <UserProfileFooter />
       </SidebarFooter>
+      <CreateProjectDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+      />
     </Sidebar>
   );
 }

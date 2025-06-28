@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,21 +19,31 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useBoard } from "@/context/BoardContext";
-import type { Ticket, TicketState } from "@/types";
+import { useUser } from "@/context/UserContext";
+import { Loader2 } from "lucide-react";
+import type { Task, TaskStatus } from "@/types";
 
-interface CreateTicketDialogProps {
+interface CreateTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
-  const { addTicket, users } = useBoard();
+const CreateTaskDialog = ({ isOpen, onClose }: CreateTaskDialogProps) => {
+  const { addTask } = useBoard();
+  const { defaultUser, users } = useUser();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [state, setState] = useState<TicketState>("BACKLOG");
-  const [assigneeId, setAssigneeId] = useState("");
+  const [state, setState] = useState<TaskStatus>("BACKLOG");
+  const [assigneeId, setAssigneeId] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isOpen && defaultUser && !assigneeId) {
+      setAssigneeId(defaultUser.id.toString());
+    }
+  }, [isOpen, defaultUser, assigneeId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim()) {
@@ -41,24 +51,37 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
       return;
     }
 
-    const assignee = assigneeId
-      ? users.find((user) => user.id === assigneeId)
-      : undefined;
+    if (!defaultUser) {
+      toast.error("Please select a default user first");
+      return;
+    }
 
-    const ticketData: Omit<
-      Ticket,
-      "id" | "comments" | "attachments" | "createdAt"
+    const assignee =
+      assigneeId && assigneeId !== "unassigned"
+        ? users.find((user) => user.id === parseInt(assigneeId))
+        : undefined;
+
+    const TaskData: Omit<
+      Task,
+      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
     > = {
       title: title.trim(),
       description: description.trim(),
-      state,
+      taskStatus: state,
       assignee,
     };
 
-    addTicket(ticketData);
-    toast.success("Ticket created successfully");
-    resetForm();
-    onClose();
+    setIsSubmitting(true);
+    try {
+      await addTask(TaskData);
+      toast.success("Task created successfully");
+      resetForm();
+      onClose();
+    } catch (error) {
+      toast.error("Failed to create Task. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -69,15 +92,16 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
   };
 
   const handleClose = () => {
+    if (isSubmitting) return;
     resetForm();
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={isSubmitting ? undefined : handleClose}>
+      <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Create New Ticket</DialogTitle>
+          <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="grid gap-2">
@@ -86,7 +110,8 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter ticket title"
+              placeholder="Enter Task title"
+              disabled={isSubmitting}
             />
           </div>
           <div className="grid gap-2">
@@ -95,9 +120,10 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter ticket description"
+              placeholder="Enter Task description"
               className="resize-none"
               rows={4}
+              disabled={isSubmitting}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -105,7 +131,8 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
               <Label htmlFor="state">State</Label>
               <Select
                 value={state}
-                onValueChange={(value) => setState(value as TicketState)}
+                onValueChange={(value) => setState(value as TaskStatus)}
+                disabled={isSubmitting}
               >
                 <SelectTrigger id="state">
                   <SelectValue placeholder="Select state" />
@@ -120,14 +147,18 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="assignee">Assignee</Label>
-              <Select value={assigneeId} onValueChange={setAssigneeId}>
+              <Select
+                value={assigneeId}
+                onValueChange={setAssigneeId}
+                disabled={isSubmitting}
+              >
                 <SelectTrigger id="assignee">
                   <SelectValue placeholder="Select assignee" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="unassigned">Unassigned</SelectItem>
                   {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
+                    <SelectItem key={user.id} value={user.id.toString()}>
                       {user.name}
                     </SelectItem>
                   ))}
@@ -136,10 +167,24 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
-            <Button type="submit">Create Ticket</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Task"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -147,4 +192,4 @@ const CreateTicketDialog = ({ isOpen, onClose }: CreateTicketDialogProps) => {
   );
 };
 
-export default CreateTicketDialog;
+export default CreateTaskDialog;
