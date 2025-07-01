@@ -76,6 +76,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_PROFILES_ACTIVE=shared,shared-docker
+
   postgres:
     image: pgvector/pgvector:pg16
     ports:
@@ -99,6 +100,15 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
       - "traefik.http.services.genai.loadbalancer.server.port=8000"
+  
+  vectorizer-worker:
+    image: timescale/pgai-vectorizer-worker:latest
+    environment:
+      PGAI_VECTORIZER_WORKER_DB_URL: postgres://postgres:postgres@postgres:5432/closedai
+      OLLAMA_HOST: http://ollama:11434
+    command: [ "--poll-interval", "5s" ]
+  ollama:
+    image: ollama/ollama
 
 volumes:
   postgres_data:
