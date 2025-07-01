@@ -1,4 +1,13 @@
 services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:3000"
+    environment:
+      - VITE_API_URL=https://closed-ai.student.k8s.aet.cit.tum.de/
+
   traefik:
     image: traefik:v3.4.1
     container_name: traefik
@@ -28,6 +37,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
 
   user-service:
     build:
@@ -46,6 +56,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
 
   task-service:
     build:
@@ -64,7 +75,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
   postgres:
     image: pgvector/pgvector:pg16
     ports:
