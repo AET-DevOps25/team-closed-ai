@@ -94,8 +94,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./genai/.env
-    expose:
-      - "8084"
+    ports:
+      - "8084:8084"
     depends_on:
       - postgres
       - ollama
