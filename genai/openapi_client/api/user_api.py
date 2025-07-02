@@ -18,6 +18,7 @@ from typing_extensions import Annotated
 
 from pydantic import StrictInt
 from typing import List
+from openapi_client.models.create_user_dto import CreateUserDto
 from openapi_client.models.user_dto import UserDto
 
 from openapi_client.api_client import ApiClient, RequestSerialized
@@ -41,7 +42,7 @@ class UserApi:
     @validate_call
     def create_user(
         self,
-        user_dto: UserDto,
+        create_user_dto: CreateUserDto,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -58,8 +59,8 @@ class UserApi:
         """Create a new user
 
 
-        :param user_dto: (required)
-        :type user_dto: UserDto
+        :param create_user_dto: (required)
+        :type create_user_dto: CreateUserDto
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -83,7 +84,7 @@ class UserApi:
         """ # noqa: E501
 
         _param = self._create_user_serialize(
-            user_dto=user_dto,
+            create_user_dto=create_user_dto,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -107,7 +108,7 @@ class UserApi:
     @validate_call
     def create_user_with_http_info(
         self,
-        user_dto: UserDto,
+        create_user_dto: CreateUserDto,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -124,8 +125,8 @@ class UserApi:
         """Create a new user
 
 
-        :param user_dto: (required)
-        :type user_dto: UserDto
+        :param create_user_dto: (required)
+        :type create_user_dto: CreateUserDto
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -149,7 +150,7 @@ class UserApi:
         """ # noqa: E501
 
         _param = self._create_user_serialize(
-            user_dto=user_dto,
+            create_user_dto=create_user_dto,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -173,7 +174,7 @@ class UserApi:
     @validate_call
     def create_user_without_preload_content(
         self,
-        user_dto: UserDto,
+        create_user_dto: CreateUserDto,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -190,8 +191,8 @@ class UserApi:
         """Create a new user
 
 
-        :param user_dto: (required)
-        :type user_dto: UserDto
+        :param create_user_dto: (required)
+        :type create_user_dto: CreateUserDto
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -215,7 +216,7 @@ class UserApi:
         """ # noqa: E501
 
         _param = self._create_user_serialize(
-            user_dto=user_dto,
+            create_user_dto=create_user_dto,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -234,7 +235,7 @@ class UserApi:
 
     def _create_user_serialize(
         self,
-        user_dto,
+        create_user_dto,
         _request_auth,
         _content_type,
         _headers,
@@ -260,8 +261,8 @@ class UserApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
-        if user_dto is not None:
-            _body_params = user_dto
+        if create_user_dto is not None:
+            _body_params = create_user_dto
 
 
         # set the HTTP header `Accept`

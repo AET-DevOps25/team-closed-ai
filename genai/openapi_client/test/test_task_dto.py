@@ -38,7 +38,9 @@ class TestTaskDto(unittest.TestCase):
                 id = 56,
                 title = '',
                 description = '',
-                task_status = 'OPEN',
+                task_status = 'BACKLOG',
+                created_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
+                updated_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
                 comments = [
                     ''
                     ],
@@ -52,7 +54,9 @@ class TestTaskDto(unittest.TestCase):
                 id = 56,
                 title = '',
                 description = '',
-                task_status = 'OPEN',
+                task_status = 'BACKLOG',
+                created_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
+                updated_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
                 comments = [
                     ''
                     ],

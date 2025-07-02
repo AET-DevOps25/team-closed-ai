@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 
 # **create_user**
-> UserDto create_user(user_dto)
+> UserDto create_user(create_user_dto)
 
 Create a new user
 
@@ -21,6 +21,7 @@ Create a new user
 
 ```python
 import openapi_client
+from openapi_client.models.create_user_dto import CreateUserDto
 from openapi_client.models.user_dto import UserDto
 from openapi_client.rest import ApiException
 from pprint import pprint
@@ -36,11 +37,11 @@ configuration = openapi_client.Configuration(
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = openapi_client.UserApi(api_client)
-    user_dto = openapi_client.UserDto() # UserDto | 
+    create_user_dto = openapi_client.CreateUserDto() # CreateUserDto | 
 
     try:
         # Create a new user
-        api_response = api_instance.create_user(user_dto)
+        api_response = api_instance.create_user(create_user_dto)
         print("The response of UserApi->create_user:\n")
         pprint(api_response)
     except Exception as e:
@@ -54,7 +55,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **user_dto** | [**UserDto**](UserDto.md)|  | 
+ **create_user_dto** | [**CreateUserDto**](CreateUserDto.md)|  | 
 
 ### Return type
 

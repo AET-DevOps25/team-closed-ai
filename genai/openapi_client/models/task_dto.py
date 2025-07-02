@@ -17,6 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from openapi_client.models.task_status import TaskStatus
@@ -31,10 +32,12 @@ class TaskDto(BaseModel):
     title: StrictStr
     description: StrictStr
     task_status: TaskStatus = Field(alias="taskStatus")
+    created_at: datetime = Field(alias="createdAt")
+    updated_at: datetime = Field(alias="updatedAt")
     comments: List[StrictStr]
     attachments: List[StrictStr]
     assignee_id: Optional[StrictInt] = Field(default=None, alias="assigneeId")
-    __properties: ClassVar[List[str]] = ["id", "title", "description", "taskStatus", "comments", "attachments", "assigneeId"]
+    __properties: ClassVar[List[str]] = ["id", "title", "description", "taskStatus", "createdAt", "updatedAt", "comments", "attachments", "assigneeId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,6 +94,8 @@ class TaskDto(BaseModel):
             "title": obj.get("title"),
             "description": obj.get("description"),
             "taskStatus": obj.get("taskStatus"),
+            "createdAt": obj.get("createdAt"),
+            "updatedAt": obj.get("updatedAt"),
             "comments": obj.get("comments"),
             "attachments": obj.get("attachments"),
             "assigneeId": obj.get("assigneeId")

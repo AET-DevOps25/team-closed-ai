@@ -14,10 +14,10 @@
 
 import unittest
 
-from openapi_client.models.add_task_dto import AddTaskDto
+from openapi_client.models.create_user_dto import CreateUserDto
 
-class TestAddTaskDto(unittest.TestCase):
-    """AddTaskDto unit test stubs"""
+class TestCreateUserDto(unittest.TestCase):
+    """CreateUserDto unit test stubs"""
 
     def setUp(self):
         pass
@@ -25,30 +25,27 @@ class TestAddTaskDto(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def make_instance(self, include_optional) -> AddTaskDto:
-        """Test AddTaskDto
+    def make_instance(self, include_optional) -> CreateUserDto:
+        """Test CreateUserDto
             include_optional is a boolean, when False only required
             params are included, when True both required and
             optional params are included """
-        # uncomment below to create an instance of `AddTaskDto`
+        # uncomment below to create an instance of `CreateUserDto`
         """
-        model = AddTaskDto()
+        model = CreateUserDto()
         if include_optional:
-            return AddTaskDto(
-                title = '',
-                description = '',
-                task_status = 'BACKLOG',
-                assignee_id = 56
+            return CreateUserDto(
+                name = '',
+                profile_picture = ''
             )
         else:
-            return AddTaskDto(
-                title = '',
-                description = '',
+            return CreateUserDto(
+                name = '',
         )
         """
 
-    def testAddTaskDto(self):
-        """Test AddTaskDto"""
+    def testCreateUserDto(self):
+        """Test CreateUserDto"""
         # inst_req_only = self.make_instance(include_optional=False)
         # inst_req_and_optional = self.make_instance(include_optional=True)
 

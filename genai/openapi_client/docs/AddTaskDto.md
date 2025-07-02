@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **str** |  | 
 **description** | **str** |  | 
+**task_status** | [**TaskStatus**](TaskStatus.md) |  | [optional] 
+**assignee_id** | **int** |  | [optional] 
 
 ## Example
 

@@ -37,6 +37,9 @@ class TestProjectDto(unittest.TestCase):
             return ProjectDto(
                 id = 56,
                 name = '',
+                color = '',
+                created_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
+                updated_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
                 task_ids = [
                     56
                     ]
@@ -45,6 +48,9 @@ class TestProjectDto(unittest.TestCase):
             return ProjectDto(
                 id = 56,
                 name = '',
+                color = '',
+                created_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
+                updated_at = datetime.datetime.strptime('2013-10-20 19:20:30.00', '%Y-%m-%d %H:%M:%S.%f'),
                 task_ids = [
                     56
                     ],

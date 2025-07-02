@@ -17,6 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
@@ -29,7 +30,9 @@ class UserDto(BaseModel):
     id: StrictInt
     name: StrictStr
     profile_picture: StrictStr = Field(alias="profilePicture")
-    __properties: ClassVar[List[str]] = ["id", "name", "profilePicture"]
+    created_at: datetime = Field(alias="createdAt")
+    updated_at: datetime = Field(alias="updatedAt")
+    __properties: ClassVar[List[str]] = ["id", "name", "profilePicture", "createdAt", "updatedAt"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,7 +87,9 @@ class UserDto(BaseModel):
         _obj = cls.model_validate({
             "id": obj.get("id"),
             "name": obj.get("name"),
-            "profilePicture": obj.get("profilePicture")
+            "profilePicture": obj.get("profilePicture"),
+            "createdAt": obj.get("createdAt"),
+            "updatedAt": obj.get("updatedAt")
         })
         return _obj
 

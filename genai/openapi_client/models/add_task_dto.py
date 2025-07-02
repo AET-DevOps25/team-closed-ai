@@ -17,8 +17,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from openapi_client.models.task_status import TaskStatus
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +29,9 @@ class AddTaskDto(BaseModel):
     """ # noqa: E501
     title: StrictStr
     description: StrictStr
-    __properties: ClassVar[List[str]] = ["title", "description"]
+    task_status: Optional[TaskStatus] = Field(default=None, alias="taskStatus")
+    assignee_id: Optional[StrictInt] = Field(default=None, alias="assigneeId")
+    __properties: ClassVar[List[str]] = ["title", "description", "taskStatus", "assigneeId"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,7 +85,9 @@ class AddTaskDto(BaseModel):
 
         _obj = cls.model_validate({
             "title": obj.get("title"),
-            "description": obj.get("description")
+            "description": obj.get("description"),
+            "taskStatus": obj.get("taskStatus"),
+            "assigneeId": obj.get("assigneeId")
         })
         return _obj
 

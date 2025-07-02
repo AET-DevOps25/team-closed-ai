@@ -9,6 +9,8 @@ Name | Type | Description | Notes
 **title** | **str** |  | 
 **description** | **str** |  | 
 **task_status** | [**TaskStatus**](TaskStatus.md) |  | 
+**created_at** | **datetime** |  | 
+**updated_at** | **datetime** |  | 
 **comments** | **List[str]** |  | 
 **attachments** | **List[str]** |  | 
 **assignee_id** | **int** |  | [optional] 

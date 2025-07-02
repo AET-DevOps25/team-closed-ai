@@ -17,6 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
@@ -28,8 +29,11 @@ class ProjectDto(BaseModel):
     """ # noqa: E501
     id: StrictInt
     name: StrictStr
+    color: StrictStr
+    created_at: datetime = Field(alias="createdAt")
+    updated_at: datetime = Field(alias="updatedAt")
     task_ids: List[StrictInt] = Field(alias="taskIds")
-    __properties: ClassVar[List[str]] = ["id", "name", "taskIds"]
+    __properties: ClassVar[List[str]] = ["id", "name", "color", "createdAt", "updatedAt", "taskIds"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,6 +88,9 @@ class ProjectDto(BaseModel):
         _obj = cls.model_validate({
             "id": obj.get("id"),
             "name": obj.get("name"),
+            "color": obj.get("color"),
+            "createdAt": obj.get("createdAt"),
+            "updatedAt": obj.get("updatedAt"),
             "taskIds": obj.get("taskIds")
         })
         return _obj

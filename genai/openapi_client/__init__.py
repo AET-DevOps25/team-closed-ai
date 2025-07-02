@@ -32,6 +32,7 @@ __all__ = [
     "ApiException",
     "AddTaskDto",
     "CreateProjectDto",
+    "CreateUserDto",
     "ProjectDto",
     "TaskDto",
     "TaskStatus",
@@ -57,6 +58,7 @@ from openapi_client.exceptions import ApiException as ApiException
 # import models into sdk package
 from openapi_client.models.add_task_dto import AddTaskDto as AddTaskDto
 from openapi_client.models.create_project_dto import CreateProjectDto as CreateProjectDto
+from openapi_client.models.create_user_dto import CreateUserDto as CreateUserDto
 from openapi_client.models.project_dto import ProjectDto as ProjectDto
 from openapi_client.models.task_dto import TaskDto as TaskDto
 from openapi_client.models.task_status import TaskStatus as TaskStatus

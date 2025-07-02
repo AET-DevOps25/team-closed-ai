@@ -16,6 +16,7 @@
 # import models into model package
 from openapi_client.models.add_task_dto import AddTaskDto
 from openapi_client.models.create_project_dto import CreateProjectDto
+from openapi_client.models.create_user_dto import CreateUserDto
 from openapi_client.models.project_dto import ProjectDto
 from openapi_client.models.task_dto import TaskDto
 from openapi_client.models.task_status import TaskStatus

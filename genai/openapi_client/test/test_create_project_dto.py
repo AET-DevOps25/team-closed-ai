@@ -35,11 +35,13 @@ class TestCreateProjectDto(unittest.TestCase):
         model = CreateProjectDto()
         if include_optional:
             return CreateProjectDto(
-                name = ''
+                name = '',
+                color = ''
             )
         else:
             return CreateProjectDto(
                 name = '',
+                color = '',
         )
         """
 
