@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
-from openapi_client.models.task_dto import TaskDto as Task
+from openapi_client.models.add_task_dto import AddTaskDto
+from openapi_client.models.task_dto import TaskDto
 
 
 class PromptRequest(BaseModel):
@@ -12,5 +13,5 @@ class PromptRequest(BaseModel):
 class GenAIResponse(BaseModel):
     intent: str
     answer: str
-    existing_tasks: Optional[List[Task]] = []
-    new_tasks: Optional[List[Task]] = []
+    existing_tasks: List[TaskDto] = []
+    new_tasks: List[AddTaskDto] = []
