@@ -8,8 +8,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY .env .env
 
-COPY pgai pgai
+COPY pgai_vec pgai_vec
 
 COPY app app
 
-CMD ["sh", "-c", "python pgai/init_pgai.py && uvicorn app.main:app --host 0.0.0.0 --port 8084"]
+CMD ["sh", "-c", "python pgai_vec/init_pgai.py && uvicorn app.main:app --host 0.0.0.0 --port 8084"]
