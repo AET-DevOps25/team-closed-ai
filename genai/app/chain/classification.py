@@ -35,7 +35,7 @@ prompt = ChatPromptTemplate.from_messages([system, user]).partial(
 )
 
 model = OllamaLLM(
-    model=os.environ["LLM_CLASSIFY_MODEL"],
+    model=os.environ["CLASSIFICATION_MODEL"],
     base_url=os.environ["OLLAMA_LLM_HOST"],
     client_kwargs={
         "headers": {"Authorization": f"Bearer {os.environ['OLLAMA_LLM_KEY']}"}
