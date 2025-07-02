@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 from pgai.vectorizer import CreateVectorizer
 from pgai.vectorizer.configuration import (
@@ -9,16 +10,19 @@ from pgai.vectorizer.configuration import (
     ChunkingNoneConfig,
 )
 
+load_dotenv()
+
+__embedding_config = EmbeddingOllamaConfig(
+    model=os.environ["EMBED_MODEL"],
+    dimensions=int(os.environ["EMBED_DIMENSIONS"]),
+)
 
 __task_vectorizer = CreateVectorizer(
     source="task",
     name="task_vectorizer",
     destination=DestinationTableConfig(destination="task_embedding"),
     loading=LoadingColumnConfig(column_name="title"),
-    embedding=EmbeddingOllamaConfig(
-        model=os.getenv("OLLAMA_MODEL", "nomic-embed-text"),
-        dimensions=int(os.getenv("EMBED_DIMENSIONS", 768)),
-    ),
+    embedding=__embedding_config,
     chunking=ChunkingNoneConfig(),
     formatting=FormattingPythonTemplateConfig(
         template="Title: $chunk\nStatus: $status\n\nDescription: $description"
@@ -31,10 +35,7 @@ __project_vectorizer = CreateVectorizer(
     name="project_vectorizer",
     destination=DestinationTableConfig(destination="project_embedding"),
     loading=LoadingColumnConfig(column_name="name"),
-    embedding=EmbeddingOllamaConfig(
-        model="llama3",
-        dimensions=int(os.getenv("EMBED_DIMENSIONS", 768)),
-    ),
+    embedding=__embedding_config,
     chunking=ChunkingNoneConfig(),
     formatting=FormattingPythonTemplateConfig(template="Project Name: $chunk"),
     enqueue_existing=True,

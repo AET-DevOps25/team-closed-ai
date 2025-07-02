@@ -95,20 +95,33 @@ services:
     env_file:
       - ./genai/.env
     expose:
-      - "8000"
+      - "8084"
+    depends_on:
+      - postgres
+      - ollama
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
-      - "traefik.http.services.genai.loadbalancer.server.port=8000"
+      - "traefik.http.services.genai.loadbalancer.server.port=8084"
   
   vectorizer-worker:
     image: timescale/pgai-vectorizer-worker:latest
-    environment:
-      PGAI_VECTORIZER_WORKER_DB_URL: postgres://postgres:postgres@postgres:5432/closedai
-      OLLAMA_HOST: http://ollama:11434
+    env_file:
+      - ./genai/.env
+    depends_on:
+      - postgres
+      - ollama
     command: [ "--poll-interval", "5s" ]
+
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    env_file:
+      - ./genai/.env
+    volumes:
+      - ollama_data:/ollama_data
 
 volumes:
   postgres_data:
+  ollama_data:
