@@ -40,7 +40,7 @@ answer_model = OllamaLLM(
     },
     temperature=0.2,
     max_tokens=300,
-    keep_alive=True,
+    keep_alive="-1m",
 )
 
 answer_chain = answer_template | answer_model
@@ -85,7 +85,7 @@ tasks_model = OllamaLLM(
     },
     temperature=0.0,
     max_tokens=500,
-    keep_alive=True,
+    keep_alive="-1m",
 )
 
 tasks_chain = tasks_prompt | tasks_model | task_parser

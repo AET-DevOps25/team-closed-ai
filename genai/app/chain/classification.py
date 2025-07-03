@@ -42,7 +42,7 @@ model = OllamaLLM(
     },
     temperature=0.0,
     max_tokens=20,
-    keep_alive=True,
+    keep_alive="-1m",
 )
 
 

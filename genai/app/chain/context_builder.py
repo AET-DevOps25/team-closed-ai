@@ -13,7 +13,7 @@ embedder = OllamaEmbeddings(
         "headers": {"Authorization": f"Bearer {os.environ['OLLAMA_EMBED_KEY']}"}
     },
     temperature=0.0,
-    keep_alive=True,
+    keep_alive=-1,
 )
 
 

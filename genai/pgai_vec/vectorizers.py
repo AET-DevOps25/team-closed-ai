@@ -15,6 +15,7 @@ load_dotenv()
 _embedding_config = EmbeddingOllamaConfig(
     model=os.environ["EMBED_MODEL"],
     dimensions=int(os.environ["EMBED_DIMENSIONS"]),
+    keep_alive="-1m",
 )
 
 
@@ -22,9 +23,13 @@ _embedding_config = EmbeddingOllamaConfig(
 # Currently, the description is stored as a large object (LOB) meaning we cannot use it directly in the vectorizer.
 _task_template = """
 Task Entry:
+- Task ID: $id,
 - Title: $chunk,
 - Status: $status,
 - User ID: $assignee_id
+- Project ID: $project_id,
+- Created At: $created_at,
+- Updated At: $updated_at,
 """
 
 _task_vectorizer = CreateVectorizer(
@@ -41,6 +46,9 @@ _task_vectorizer = CreateVectorizer(
 
 _project_template = """
 Project Entry:
+- Project ID: $id,
+- Created At: $created_at,
+- Updated At: $updated_at,
 - Project Name: $chunk
 """
 

@@ -5,6 +5,7 @@ from app.models.base import PromptRequest, GenAIResponse
 from app.chain.classification import classify_prompt
 from app.models.intent import IntentType
 from app.chain.generation import generate_answer_and_tasks
+from app.chain.answering import answer_and_reference
 
 logger = logging.getLogger("GenAI Kanban Assistant")
 logging.basicConfig(level=logging.INFO)
@@ -31,13 +32,11 @@ def interpret(request: PromptRequest):
             existing_tasks=[],
             new_tasks=tasks,
         )
-
-    elif classification.intent == IntentType.answering:
-        logger.info(f"Classified as answering: {request.prompt}")
-
-    return GenAIResponse(
-        intent=classification.intent,
-        answer="This is a stubbed answer.",
-        existing_tasks=[],
-        new_tasks=[],
-    )
+    else:
+        answer, tasks = answer_and_reference(request)
+        return GenAIResponse(
+            intent=classification.intent,
+            answer=answer,
+            existing_tasks=tasks,
+            new_tasks=[],
+        )
