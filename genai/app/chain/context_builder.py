@@ -53,7 +53,7 @@ def _build_task_context(
                     dest = vec.destination.destination
                     cur.execute(
                         f"""
-                        SELECT chunk
+                        SELECT chunk, convert_from(lo_get(description), 'UTF8')
                         FROM {dest}
                         WHERE project_id = %s
                         ORDER BY embedding <=> %s
@@ -61,9 +61,13 @@ def _build_task_context(
                         """,
                         (project_id, query_embeddings, k),
                     )
-                    knowledge.extend(chunk for (chunk,) in cur.fetchall() if chunk)
+                    raw_knowledge = cur.fetchall()
+                    for chunk, description in raw_knowledge:
+                        if description:
+                            knowledge.append(f"{chunk}\n- Description: {description}")
+                        else:
+                            knowledge.append(chunk)
                     break
-
     return knowledge
 
 

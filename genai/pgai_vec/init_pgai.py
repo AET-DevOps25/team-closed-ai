@@ -5,7 +5,7 @@ from typing import Dict
 
 import pgai
 from pgai.vectorizer import CreateVectorizer
-from vectorizers import get_vectorizers, get_views
+from vectorizers import get_vectorizers
 
 logger = logging.getLogger("PGAI INIT")
 logging.basicConfig(level=logging.INFO)
@@ -75,57 +75,6 @@ def synchronize_vectorizers(conn):
     manager.close()
 
 
-def synchronize_views(conn):
-    print(get_views())
-    desired = get_views()
-    desired_names = set(desired)
-
-    with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT table_name
-            FROM information_schema.views
-            WHERE table_schema = 'public'
-            AND table_name LIKE 'vectorizer_view_%';
-            """
-        )
-        existing = {row[0] for row in cur.fetchall()}
-
-        # drop views that are no longer defined
-        for view_name in existing - desired_names:
-            logger.info("Dropping obsolete view %s", view_name)
-            cur.execute(f"DROP VIEW IF EXISTS public.{view_name} CASCADE;")
-
-        # create or replace desired views
-        for view_name, view_sql in desired.items():
-            cur.execute(
-                """
-                SELECT view_definition
-                FROM information_schema.views
-                WHERE table_schema = 'public' AND table_name = %s
-                """,
-                (view_name,),
-            )
-            row = cur.fetchone()
-            existing_def = row[0].strip() if row else None
-            desired_def = view_sql.strip()
-
-            if existing_def is None:
-                logger.info("Creating new view %s", view_name)
-                cur.execute(
-                    f"CREATE MATERIALIZED VIEW public.{view_name} AS {view_sql}"
-                )
-                cur.execute(f"CREATE UNIQUE INDEX ON {view_name} (id);")
-            elif existing_def != desired_def:
-                logger.info("Replacing changed view %s", view_name)
-                cur.execute(
-                    f"CREATE OR REPLACE MATERIALIZED VIEW public.{view_name} AS {view_sql}"
-                )
-                cur.execute(f"CREATE UNIQUE INDEX ON {view_name} (id);")
-            else:
-                logger.debug("View %s unchanged—skipping", view_name)
-
-
 def main():
     if not DB_URL:
         logger.error("DATABASE_URL not set")
@@ -135,7 +84,6 @@ def main():
     pgai.install(DB_URL)
 
     with psycopg2.connect(DB_URL) as conn:
-        synchronize_views(conn)
         synchronize_vectorizers(conn)
         conn.commit()
 

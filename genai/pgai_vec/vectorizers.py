@@ -17,15 +17,15 @@ _embedding_config = EmbeddingOllamaConfig(
     dimensions=int(os.environ["EMBED_DIMENSIONS"]),
 )
 
-_task_template = """
-Task Entry: {
- Title: $chunk,
- Status: $status,
- User ID: $assignee_id,
- Description: $description
-}
-"""
 
+# TODO: Use the description field for embedding tasks. This requires a change in the database schema.
+# Currently, the description is stored as a large object (LOB) meaning we cannot use it directly in the vectorizer.
+_task_template = """
+Task Entry:
+- Title: $chunk,
+- Status: $status,
+- User ID: $assignee_id
+"""
 
 _task_vectorizer = CreateVectorizer(
     source="task",
@@ -38,10 +38,10 @@ _task_vectorizer = CreateVectorizer(
     enqueue_existing=True,
 )
 
+
 _project_template = """
-Project Entry: {
- Project Name: $chunk
-}
+Project Entry:
+- Project Name: $chunk
 """
 
 _project_vectorizer = CreateVectorizer(
@@ -61,10 +61,3 @@ def get_vectorizers() -> list[CreateVectorizer]:
     Returns a list of vectorizers.
     """
     return [_task_vectorizer, _project_vectorizer]
-
-
-def get_views() -> dict[str, str]:
-    """
-    Returns a list of views.
-    """
-    return {_task_vectorizer.source: _task_view}
