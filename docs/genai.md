@@ -48,3 +48,14 @@ curl http://localhost:8084/interpret -X POST \
 ![GenAI Workflow](./diagrams/GenAI%20activity%20diagram.png)
 
 ---
+
+### 📄 Generating OpenAPI YAML
+To generate the openapi.yaml file from the running GenAI service, run the following command in the genai directory:
+
+```bash
+curl -s http://localhost:8084/openapi.json | yq -P > openapi.yaml
+```
+
+This fetches the OpenAPI schema in JSON format and converts it to a readable YAML format using yq.
+
+Note: Make sure the genai service is running and yq is installed on your system.
