@@ -76,8 +76,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_PROFILES_ACTIVE=shared,shared-docker
+
   postgres:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     ports:
       - "5432:5432"
     environment:
@@ -87,5 +88,40 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  genai:
+    build:
+      context: ./genai
+      dockerfile: Dockerfile
+    env_file:
+      - ./genai/.env
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres
+      - ollama
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
+      - "traefik.http.services.genai.loadbalancer.server.port=8084"
+  
+  vectorizer-worker:
+    image: timescale/pgai-vectorizer-worker:latest
+    env_file:
+      - ./genai/.env
+    depends_on:
+      - postgres
+      - ollama
+    command: [ "--poll-interval", "5s" ]
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    env_file:
+      - ./genai/.env
+    volumes:
+      - ollama_data:/ollama_data
+
 volumes:
   postgres_data:
+  ollama_data:
