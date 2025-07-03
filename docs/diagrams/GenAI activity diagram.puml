@@ -18,26 +18,18 @@ start
 
 :Receive POST /interpret;
 
-:Ensure project embeddings are up to date;
+:Classify intent;
 
-if (Embeddings up to date?) then (Yes)
-  :Continue;
-else (No)
-  :Fetch project and tasks from server;
-  :Update vectorstore;
-endif
-
-:Classify prompt (Q&A vs Task Generation);
-
-if (Prompt is Q&A?) then (Yes)
-  :Retrieve relevant content;
-  :Generate answer using QA model;
-  :Return GenAIResponse with answer and existing tasks;
-else (No)
-  :Retrieve relevant content;
-  :Generate context-aware answer;
-  :Generate new task suggestions;
-  :Return GenAIResponse with answer and new tasks;
+if (Intent == generation?) then (yes)
+  :Build context from project + task embeddings;
+  :Generate answer using LLM;
+  :Generate new tasks from answer;
+  :Return answer + new tasks;
+else (no)
+  :Build context from project + task embeddings;
+  :Generate answer using LLM;
+  :Identify and reference existing tasks (e.g.: [id:123]);
+  :Return answer + referenced tasks;
 endif
 
 stop
