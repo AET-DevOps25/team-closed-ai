@@ -6,9 +6,9 @@ info:
 servers:
   - url: http://localhost:80
 tags:
-  - Project
-  - Task
-  - User
+  - name: Project
+  - name: Task
+  - name: User
 
 paths:
   # Project Service Endpoints

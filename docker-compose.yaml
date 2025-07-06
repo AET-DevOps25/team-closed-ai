@@ -12,8 +12,8 @@ services:
     image: traefik:v3.4.1
     container_name: traefik
     ports:
-      - "80:80"    # HTTP entrypoint
-      - "8080:8080"  # dashboard (insecure)
+      - "80:80" # HTTP entrypoint
+      - "8080:8080" # dashboard (insecure)
     command:
       - --api.insecure=true
       - --providers.docker=true
@@ -103,7 +103,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
       - "traefik.http.services.genai.loadbalancer.server.port=8084"
-  
+
   vectorizer-worker:
     image: timescale/pgai-vectorizer-worker:latest
     env_file:
@@ -111,7 +111,7 @@ services:
     depends_on:
       - postgres
       - ollama
-    command: [ "--poll-interval", "5s" ]
+    command: ["--poll-interval", "5s"]
 
   ollama:
     image: ollama/ollama:latest
