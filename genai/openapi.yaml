@@ -1,0 +1,193 @@
+openapi: 3.1.0
+info:
+  title: GenAI Kanban Assistant
+  version: 0.1.0
+paths:
+  /healthz:
+    get:
+      summary: Health
+      operationId: health_healthz_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /interpret:
+    post:
+      summary: Interpret
+      operationId: interpret_interpret_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromptRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenAIResponse'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AddTaskDto:
+      properties:
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        taskStatus:
+          anyOf:
+            - $ref: '#/components/schemas/TaskStatus'
+            - type: "null"
+        assigneeId:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Assigneeid
+      type: object
+      required:
+        - title
+        - description
+      title: AddTaskDto
+      description: AddTaskDto
+    GenAIResponse:
+      properties:
+        intent:
+          type: string
+          title: Intent
+        answer:
+          type: string
+          title: Answer
+        existing_tasks:
+          items:
+            $ref: '#/components/schemas/TaskDto'
+          type: array
+          title: Existing Tasks
+          default: []
+        new_tasks:
+          items:
+            $ref: '#/components/schemas/AddTaskDto'
+          type: array
+          title: New Tasks
+          default: []
+      type: object
+      required:
+        - intent
+        - answer
+      title: GenAIResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PromptRequest:
+      properties:
+        project_id:
+          type: string
+          title: Project Id
+        user_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Id
+        prompt:
+          type: string
+          title: Prompt
+      type: object
+      required:
+        - project_id
+        - prompt
+      title: PromptRequest
+    TaskDto:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        taskStatus:
+          $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+          format: date-time
+          title: Createdat
+        updatedAt:
+          type: string
+          format: date-time
+          title: Updatedat
+        comments:
+          items:
+            type: string
+          type: array
+          title: Comments
+        attachments:
+          items:
+            type: string
+          type: array
+          title: Attachments
+        assigneeId:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Assigneeid
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - taskStatus
+        - createdAt
+        - updatedAt
+        - comments
+        - attachments
+      title: TaskDto
+      description: TaskDto
+    TaskStatus:
+      type: string
+      enum:
+        - BACKLOG
+        - OPEN
+        - IN_PROGRESS
+        - DONE
+      title: TaskStatus
+      description: TaskStatus
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
