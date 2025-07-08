@@ -1,7 +1,11 @@
 import { useState, useCallback } from "react";
-import { UserApi, type UserDto, type CreateUserDto } from "../api/api";
+import {
+  UserApi,
+  type UserDto,
+  type CreateUserDto,
+  Configuration,
+} from "@/api/server";
 import { type ApiState, createInitialApiState } from "../types/api";
-import { Configuration } from "@/api/configuration";
 import { useApi } from "./use-api";
 
 const userApi = new UserApi(

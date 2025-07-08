@@ -1,4 +1,4 @@
-import type { UserDto, TaskDto, ProjectDto } from "@/api/api";
+import type { UserDto, TaskDto, ProjectDto } from "@/api/server";
 import type { User, Task, Project } from "@/types";
 
 export const mapUserDtoToUser = (userDto: UserDto): User => userDto;

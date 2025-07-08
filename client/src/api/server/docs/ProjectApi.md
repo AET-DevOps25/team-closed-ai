@@ -4,15 +4,15 @@ All URIs are relative to *http://localhost:80*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**addTaskToProject**](#addtasktoproject) | **POST** /projects/{id}/tasks | Add a task to a project|
+|[**addTasksToProject**](#addtaskstoproject) | **POST** /projects/{id}/tasks | Add tasks to a project|
 |[**createProject**](#createproject) | **POST** /projects | Create a new project|
 |[**deleteProject**](#deleteproject) | **DELETE** /projects/{id} | Delete a project|
 |[**getAllProjects**](#getallprojects) | **GET** /projects | Get all projects|
 |[**getProjectById**](#getprojectbyid) | **GET** /projects/{id} | Get a project by ID|
 |[**updateProject**](#updateproject) | **PUT** /projects/{id} | Update a project|
 
-# **addTaskToProject**
-> TaskDto addTaskToProject(addTaskDto)
+# **addTasksToProject**
+> Array<TaskDto> addTasksToProject(addTaskDto)
 
 
 ### Example
@@ -20,17 +20,16 @@ All URIs are relative to *http://localhost:80*
 ```typescript
 import {
     ProjectApi,
-    Configuration,
-    AddTaskDto
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ProjectApi(configuration);
 
 let id: number; // (default to undefined)
-let addTaskDto: AddTaskDto; //
+let addTaskDto: Array<AddTaskDto>; //
 
-const { status, data } = await apiInstance.addTaskToProject(
+const { status, data } = await apiInstance.addTasksToProject(
     id,
     addTaskDto
 );
@@ -40,13 +39,13 @@ const { status, data } = await apiInstance.addTaskToProject(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **addTaskDto** | **AddTaskDto**|  | |
+| **addTaskDto** | **Array<AddTaskDto>**|  | |
 | **id** | [**number**] |  | defaults to undefined|
 
 
 ### Return type
 
-**TaskDto**
+**Array<TaskDto>**
 
 ### Authorization
 
@@ -61,7 +60,7 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-|**200** | The created task |  -  |
+|**200** | The created tasks |  -  |
 |**404** | Project not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

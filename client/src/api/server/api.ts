@@ -262,17 +262,17 @@ export const ProjectApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
-         * @summary Add a task to a project
+         * @summary Add tasks to a project
          * @param {number} id 
-         * @param {AddTaskDto} addTaskDto 
+         * @param {Array<AddTaskDto>} addTaskDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTaskToProject: async (id: number, addTaskDto: AddTaskDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addTasksToProject: async (id: number, addTaskDto: Array<AddTaskDto>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('addTaskToProject', 'id', id)
+            assertParamExists('addTasksToProject', 'id', id)
             // verify required parameter 'addTaskDto' is not null or undefined
-            assertParamExists('addTaskToProject', 'addTaskDto', addTaskDto)
+            assertParamExists('addTasksToProject', 'addTaskDto', addTaskDto)
             const localVarPath = `/projects/{id}/tasks`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -486,16 +486,16 @@ export const ProjectApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Add a task to a project
+         * @summary Add tasks to a project
          * @param {number} id 
-         * @param {AddTaskDto} addTaskDto 
+         * @param {Array<AddTaskDto>} addTaskDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addTaskToProject(id: number, addTaskDto: AddTaskDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addTaskToProject(id, addTaskDto, options);
+        async addTasksToProject(id: number, addTaskDto: Array<AddTaskDto>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addTasksToProject(id, addTaskDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ProjectApi.addTaskToProject']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ProjectApi.addTasksToProject']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -575,14 +575,14 @@ export const ProjectApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
-         * @summary Add a task to a project
+         * @summary Add tasks to a project
          * @param {number} id 
-         * @param {AddTaskDto} addTaskDto 
+         * @param {Array<AddTaskDto>} addTaskDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTaskToProject(id: number, addTaskDto: AddTaskDto, options?: RawAxiosRequestConfig): AxiosPromise<TaskDto> {
-            return localVarFp.addTaskToProject(id, addTaskDto, options).then((request) => request(axios, basePath));
+        addTasksToProject(id: number, addTaskDto: Array<AddTaskDto>, options?: RawAxiosRequestConfig): AxiosPromise<Array<TaskDto>> {
+            return localVarFp.addTasksToProject(id, addTaskDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -646,15 +646,15 @@ export const ProjectApiFactory = function (configuration?: Configuration, basePa
 export class ProjectApi extends BaseAPI {
     /**
      * 
-     * @summary Add a task to a project
+     * @summary Add tasks to a project
      * @param {number} id 
-     * @param {AddTaskDto} addTaskDto 
+     * @param {Array<AddTaskDto>} addTaskDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectApi
      */
-    public addTaskToProject(id: number, addTaskDto: AddTaskDto, options?: RawAxiosRequestConfig) {
-        return ProjectApiFp(this.configuration).addTaskToProject(id, addTaskDto, options).then((request) => request(this.axios, this.basePath));
+    public addTasksToProject(id: number, addTaskDto: Array<AddTaskDto>, options?: RawAxiosRequestConfig) {
+        return ProjectApiFp(this.configuration).addTasksToProject(id, addTaskDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
