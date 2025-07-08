@@ -137,8 +137,8 @@ public class ProjectControllerTest {
 
         // Perform POST request and validate response
         mockMvc.perform(post("/projects")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Test Project 1\",\"color\":\"#3070B3\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Test Project 1\",\"color\":\"#3070B3\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Test Project 1")))
@@ -163,8 +163,8 @@ public class ProjectControllerTest {
 
         // Perform PUT request and validate response
         mockMvc.perform(put("/projects/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Updated Project\",\"taskIds\":[]}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1,\"name\":\"Updated Project\",\"taskIds\":[]}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Updated Project")))
@@ -182,8 +182,8 @@ public class ProjectControllerTest {
 
         // Perform PUT request and validate response
         mockMvc.perform(put("/projects/99")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":99,\"name\":\"Updated Project\",\"taskIds\":[]}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":99,\"name\":\"Updated Project\",\"taskIds\":[]}"))
                 .andExpect(status().isNotFound());
 
         // Verify service method was called
@@ -202,40 +202,48 @@ public class ProjectControllerTest {
     }
 
     @Test
-    void addTask_WhenProjectExists_ShouldReturnCreatedTask() throws Exception {
-        // Mock service method
-        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.BACKLOG), eq(null))).thenReturn(testTask);
+    void addTasks_WhenProjectExists_ShouldReturnCreatedTasks() throws Exception {
+        when(projectService.createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG), eq(null))).thenReturn(testTask);
+        when(projectService.createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.OPEN), eq(2L))).thenReturn(testTaskWithOpenStatus);
 
         // Perform POST request and validate response
         mockMvc.perform(post("/projects/1/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"BACKLOG\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[" +
+                                "{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"BACKLOG\"}," +
+                                "{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"OPEN\",\"assigneeId\":2}" +
+                                "]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.title", is("Test Task")))
-                .andExpect(jsonPath("$.description", is("Test Description")))
-                .andExpect(jsonPath("$.taskStatus", is("BACKLOG")));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].title", is("Test Task")))
+                .andExpect(jsonPath("$[0].description", is("Test Description")))
+                .andExpect(jsonPath("$[0].taskStatus", is("BACKLOG")))
+                .andExpect(jsonPath("$[1].id", is(1)))
+                .andExpect(jsonPath("$[1].title", is("Test Task")))
+                .andExpect(jsonPath("$[1].description", is("Test Description")))
+                .andExpect(jsonPath("$[1].taskStatus", is("OPEN")));
 
-        // Verify service method was called
         verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG), eq(null));
+        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.OPEN), eq(2L));
     }
 
     @Test
-    void addTask_WithAssignee_WhenProjectExists_ShouldReturnCreatedTask() throws Exception {
-        // Mock service method
-        when(projectService.createTask(eq(1L), anyString(), anyString(), eq(TaskStatus.OPEN), eq(2L))).thenReturn(testTaskWithOpenStatus);
+    void addTasks_WhenAddingSingleTask_ShouldReturnCreatedTask() throws Exception {
+        when(projectService.createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG), eq(2L))).thenReturn(testTask);
 
-        // Perform POST request and validate response
         mockMvc.perform(post("/projects/1/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"OPEN\",\"assigneeId\":2}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[" +
+                                "{\"title\":\"Test Task\",\"description\":\"Test Description\",\"taskStatus\":\"BACKLOG\",\"assigneeId\":2}" +
+                                "]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.title", is("Test Task")))
-                .andExpect(jsonPath("$.description", is("Test Description")))
-                .andExpect(jsonPath("$.taskStatus", is("OPEN")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].title", is("Test Task")))
+                .andExpect(jsonPath("$[0].description", is("Test Description")))
+                .andExpect(jsonPath("$[0].taskStatus", is("BACKLOG")));
 
-        // Verify service method was called
-        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.OPEN), eq(2L));
+        verify(projectService, times(1)).createTask(eq(1L), eq("Test Task"), eq("Test Description"), eq(TaskStatus.BACKLOG), eq(2L));
     }
 }
