@@ -1,4 +1,5 @@
 import Board from "@/components/board/Board";
+import ChatButton from "@/components/chat/ChatButton";
 import { BoardProvider } from "@/context/BoardContext";
 import { useProject } from "@/context/ProjectContext";
 
@@ -10,6 +11,7 @@ const BoardPage = () => {
       <BoardProvider>
         <div className="max-w-7xl mx-auto">
           <Board selectedProject={selectedProject} />
+          <ChatButton />
         </div>
       </BoardProvider>
     </div>
