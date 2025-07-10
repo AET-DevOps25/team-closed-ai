@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
-from app.models.intent import IntentResult
+from models.intent import IntentResult
 
 load_dotenv()
 

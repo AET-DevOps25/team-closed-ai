@@ -6,8 +6,8 @@ from langchain_ollama.llms import OllamaLLM
 from openapi_client.api_client import ApiClient
 from openapi_client.api.task_api import TaskApi, TaskDto
 from openapi_client.configuration import Configuration
-from app.chain.context_builder import build_context
-from app.models.base import PromptRequest
+from chain.context_builder import build_context
+from models.base import PromptRequest
 
 _ID_PATTERN = re.compile(r"\[id:(\d+)\]")
 
