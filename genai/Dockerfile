@@ -1,15 +1,18 @@
-FROM python:3.11-slim
-WORKDIR /
+# 1. Prepare venv on Debian slim
+FROM debian:12-slim AS build
+RUN apt-get update && \
+    apt-get install --no-install-suggests --no-install-recommends --yes python3-venv gcc libpython3-dev && \
+    python3 -m venv /venv && \
+    /venv/bin/pip install --upgrade pip setuptools wheel
 
-COPY openapi_client openapi_client
+# 2. Build venv dependencies
+FROM build AS build-venv
+COPY requirements.txt /requirements.txt
+RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY .env .env
-
-COPY pgai_vec pgai_vec
-
-COPY app app
-
-CMD ["sh", "-c", "python app/pgai_vec/init_pgai.py && uvicorn app.main:app --host 0.0.0.0 --port 8084"]
+# 3. Distroless minimal image
+FROM gcr.io/distroless/python3-debian12
+COPY --from=build-venv /venv /venv
+COPY /app /app
+WORKDIR /app
+ENTRYPOINT ["/venv/bin/python3", "main.py"]
