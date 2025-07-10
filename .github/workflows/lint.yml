@@ -37,7 +37,5 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-      - name: Run Spotless Apply
-        run: ../gradlew spotlessApply
       - name: Run Spotless Check
         run: ../gradlew spotlessCheck
