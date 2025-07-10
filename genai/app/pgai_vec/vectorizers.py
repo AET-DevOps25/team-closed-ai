@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 from pgai.vectorizer import CreateVectorizer
 from pgai.vectorizer.configuration import (
@@ -10,7 +9,6 @@ from pgai.vectorizer.configuration import (
     ChunkingNoneConfig,
 )
 
-load_dotenv()
 
 _embedding_config = EmbeddingOllamaConfig(
     model=os.environ["EMBED_MODEL"],
