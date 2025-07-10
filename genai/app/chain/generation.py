@@ -1,6 +1,5 @@
 import os
 from typing import List
-from dotenv import load_dotenv
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
@@ -10,8 +9,6 @@ from openapi_client.models.task_status import TaskStatus
 from pydantic import BaseModel
 from app.chain.context_builder import build_context
 from app.models.base import PromptRequest
-
-load_dotenv()
 
 
 # ——————————————————————————————————————————————
