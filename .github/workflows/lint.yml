@@ -22,3 +22,24 @@ jobs:
         run: npm install
       - name: Run ESLint
         run: npm run lint
+
+  lint-server:
+    name: Lint Server Code with Spotless
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [project, task, user]
+    defaults:
+      run:
+        working-directory: server/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Run Spotless Apply
+        run: ./gradlew spotlessApply
+      - name: Run Spotless Check
+        run: ./gradlew spotlessCheck
