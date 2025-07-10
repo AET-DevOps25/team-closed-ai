@@ -12,7 +12,6 @@ RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
 
 # 3. Distroless minimal image
 FROM gcr.io/distroless/python3-debian12
-
 COPY --from=build-venv /venv /venv
 COPY /app /app
 WORKDIR /app
