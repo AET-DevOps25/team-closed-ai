@@ -31,7 +31,7 @@ jobs:
         service: [project, task, user]
     defaults:
       run:
-        working-directory: server/${{ matrix.service }}
+        working-directory: server/${{ matrix.service }}-service
     steps:
       - uses: actions/checkout@v4
       - name: Set up Java
