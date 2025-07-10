@@ -290,7 +290,11 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+# Ignore all .env files except those containing "example" in the name
 .env
+.env.*
+!.env*example*
+
 .venv
 env/
 venv/

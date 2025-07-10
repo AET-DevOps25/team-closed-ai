@@ -1,0 +1,36 @@
+@startuml /interpret Endpoint Activity Diagram
+
+skinparam monochrome false
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam activity {
+    BackgroundColor #F9F9F9
+    BorderColor #333333
+    FontSize 14
+    FontColor black
+}
+skinparam arrow {
+    Color #333333
+    FontSize 13
+}
+
+start
+
+:Receive POST /interpret;
+
+:Classify intent;
+
+if (Intent == generation?) then (yes)
+  :Build context from project + task embeddings;
+  :Generate answer using LLM;
+  :Generate new tasks from answer;
+  :Return answer + new tasks;
+else (no)
+  :Build context from project + task embeddings;
+  :Generate answer using LLM;
+  :Identify and reference existing tasks (e.g.: [id:123]);
+  :Return answer + referenced tasks;
+endif
+
+stop
+@enduml
