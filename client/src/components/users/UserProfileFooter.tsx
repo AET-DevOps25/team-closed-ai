@@ -27,6 +27,7 @@ interface UserProfileFooterProps {
   onSignOut?: () => void;
 }
 
+// eslint-disable-next-line no-empty-pattern
 export function UserProfileFooter({}: UserProfileFooterProps) {
   const { users, defaultUser, loading, setDefaultUser } = useUser();
 
