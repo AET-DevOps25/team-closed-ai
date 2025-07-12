@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-vectorizer
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-vectorizer
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}-vectorizer
+    spec:
+      containers:
+        - name: vectorizer
+          image: "{{ $.Values.services.vectorizer.image.repository }}:{{ $.Values.services.vectorizer.image.tag }}"
+          imagePullPolicy: Always
+          args: ["--poll-interval", "5s"]
+          envFrom:
+            - configMapRef:
+                name: {{ $.Release.Name }}-config
+            - secretRef:
+                name: {{ $.Release.Name }}-secret

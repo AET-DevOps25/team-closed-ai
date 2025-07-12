@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-client
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-client
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}-client
+    spec:
+      containers:
+        - name: client
+          image: "{{ $.Values.services.client.image.repository }}:{{ $.Values.services.client.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.services.client.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ $.Release.Name }}-config
+            - secretRef:
+                name: {{ $.Release.Name }}-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-client
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $.Release.Name }}-client
+  ports:
+    - port: {{ $.Values.services.client.port }}
+      targetPort: {{ $.Values.services.client.port }}
+  type: ClusterIP
