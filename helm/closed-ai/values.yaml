@@ -41,15 +41,44 @@ services:
     port: 8081
     path: /tasks
 
-postgresql:
+  client:
+    enabled: true
+    image:
+      repository: ghcr.io/aet-devops25/team-closed-ai/client
+      tag: latest
+    port: 3000
+    path: /
+
+  genai:
+    enabled: true
+    image:
+      repository: ghcr.io/aet-devops25/team-closed-ai/genai-service
+      tag: latest
+    port: 8084
+    path: /genai
+
+  ollama:
+    enabled: false
+    image:
+      repository: ollama/ollama
+      tag: latest
+    port: 11434
+
+  vectorizer:
+    enabled: true
+    image:
+      repository: timescale/pgai-vectorizer-worker
+      tag: latest
+
+pgvector:
   enabled: true
   auth:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     database: ${DB_NAME}
   image:
-    repository: postgres
-    tag: "16"
+    repository: pgvector/pgvector
+    tag: "pg16"
   persistence:
     enabled: true
     size: 2Gi
