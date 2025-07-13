@@ -2,7 +2,7 @@ services:
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: local.Dockerfile
     ports:
       - "5173:3000"
     environment:
