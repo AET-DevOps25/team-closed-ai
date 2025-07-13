@@ -4,9 +4,9 @@ namespace: closed-ai
 global:
   postgresql:
     auth:
-      username: ${DB_USERNAME}
-      password: ${DB_PASSWORD}
-      database: ${DB_NAME}
+      username: postgres
+      password: postgres
+      database: closedai
 
 ingress:
   enabled: true
@@ -64,18 +64,18 @@ services:
       tag: latest
     port: 11434
 
-  vectorizer:
-    enabled: true
-    image:
-      repository: timescale/pgai-vectorizer-worker
-      tag: latest
+vectorizer:
+  enabled: true
+  image:
+    repository: timescale/pgai-vectorizer-worker
+    tag: latest
 
 pgvector:
   enabled: true
   auth:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    database: ${DB_NAME}
+    username: postgres
+    password: postgres
+    database: closedai
   image:
     repository: pgvector/pgvector
     tag: "pg16"

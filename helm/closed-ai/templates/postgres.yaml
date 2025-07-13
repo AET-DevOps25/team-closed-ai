@@ -6,9 +6,7 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: "closedai"
-  POSTGRES_USER: "postgres"
-  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_DB: "{{ .Values.global.postgresql.auth.database }}"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -41,13 +39,26 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: 'postgres:16'
+          image: 'pgvector/pgvector:pg16'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-postgres-config
+            - secretRef:
+                name: {{ .Release.Name }}-secret
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: SPRING_DATASOURCE_PASSWORD
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdata
