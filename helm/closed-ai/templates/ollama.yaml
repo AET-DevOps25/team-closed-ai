@@ -1,4 +1,4 @@
-{{- if .Values.services.ollama.enabled }}
+{{- if .Values.ollama.enabled }}
 
 ---
 apiVersion: apps/v1
@@ -18,10 +18,10 @@ spec:
     spec:
       containers:
         - name: ollama
-          image: "{{ .Values.services.ollama.image.repository }}:{{ .Values.services.ollama.image.tag }}"
+          image: "{{ .Values.ollama.image.repository }}:{{ .Values.ollama.image.tag }}"
           imagePullPolicy: Always
           ports:
-            - containerPort: {{ .Values.services.ollama.port }}
+            - containerPort: {{ .Values.ollama.port }}
           envFrom:
             - secretRef:
                 name: {{ .Release.Name }}-secret
@@ -43,7 +43,7 @@ spec:
   selector:
     app: {{ .Release.Name }}-ollama
   ports:
-    - port: {{ .Values.services.ollama.port }}
-      targetPort: {{ .Values.services.ollama.port }}
+    - port: {{ .Values.ollama.port }}
+      targetPort: {{ .Values.ollama.port }}
   type: ClusterIP
 {{- end }} 

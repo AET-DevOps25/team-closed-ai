@@ -22,7 +22,7 @@ data:
   TASK_GEN_MODEL: "llama3.3:latest"
 
   # Ollama embedding configuration
-  OLLAMA_EMBED_HOST: "https://gpu.aet.cit.tum.de/ollama"
+  OLLAMA_EMBED_HOST: "http://{{ .Release.Name }}-ollama:{{ .Values.ollama.port }}"
   EMBED_MODEL: "nomic-embed-text"
   EMBED_DIMENSIONS: "768"
 
@@ -32,7 +32,7 @@ data:
   DATABASE_URL: "postgres://{{ .Values.global.postgresql.auth.username }}:{{ .Values.global.postgresql.auth.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.global.postgresql.auth.database }}"
 
   # Ollama vectorizer worker configuration
-  OLLAMA_HOST: "https://gpu.aet.cit.tum.de/ollama"
+  OLLAMA_HOST: "http://{{ .Release.Name }}-ollama:{{ .Values.ollama.port }}"
   PGAI_VECTORIZER_WORKER_DB_URL: "postgres://{{ .Values.global.postgresql.auth.username }}:{{ .Values.global.postgresql.auth.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.global.postgresql.auth.database }}"
 
   TRAEFIK_URL: 'https://closed-ai.student.k8s.aet.cit.tum.de/'

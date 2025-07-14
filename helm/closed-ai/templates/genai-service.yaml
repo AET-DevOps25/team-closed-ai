@@ -25,6 +25,8 @@ spec:
                 name: {{ $.Release.Name }}-config
             - secretRef:
                 name: {{ $.Release.Name }}-secret
+            - secretRef:
+                name: gen-ai-secret
 
 ---
 apiVersion: v1

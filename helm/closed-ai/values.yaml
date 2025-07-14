@@ -55,20 +55,20 @@ services:
       repository: ghcr.io/aet-devops25/team-closed-ai/genai-service
       tag: latest
     port: 8084
-    path: /genai
-
-  ollama:
-    enabled: false
-    image:
-      repository: ollama/ollama
-      tag: latest
-    port: 11434
+    path: /interpret
 
 vectorizer:
   enabled: true
   image:
     repository: timescale/pgai-vectorizer-worker
     tag: latest
+
+ollama:
+  enabled: true
+  image:
+    repository: ollama/ollama
+    tag: latest
+  port: 11434
 
 pgvector:
   enabled: true
