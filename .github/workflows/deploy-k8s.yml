@@ -1,0 +1,43 @@
+name: Deploy to Chair's Kubernetes cluster
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only run if the build workflow succeeded (when triggered by workflow_run)
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade closed-ai ./helm/closed-ai \
+            --install \
+            --namespace closed-ai \
+            --create-namespace \
+            --set global.postgresql.auth.username=$DB_USERNAME \
+            --set global.postgresql.auth.password=$DB_PASSWORD \
+            --set global.postgresql.auth.database=$DB_NAME \
+            --set postgresql.auth.username=$DB_USERNAME \
+            --set postgresql.auth.password=$DB_PASSWORD \
+            --set postgresql.auth.database=$DB_NAME
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
