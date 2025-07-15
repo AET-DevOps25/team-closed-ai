@@ -11,7 +11,7 @@ data:
   USER-SERVICE_URL: 'http://{{ .Release.Name }}-user-service:{{ .Values.services.user.port }}'
   TASK-SERVICE_URL: 'http://{{ .Release.Name }}-task-service:{{ .Values.services.task.port }}'
 
-  VITE_API_URL: 'https://closed-ai.student.k8s.aet.cit.tum.de/'
+  VITE_API_URL: 'https://closed-ai.student.k8s.aet.cit.tum.de'
 
   # Ollama LLM configuration for genai
   OLLAMA_LLM_HOST: "https://gpu.aet.cit.tum.de/ollama"
