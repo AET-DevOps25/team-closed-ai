@@ -11,5 +11,9 @@ COPY . .
 RUN mv .env.production.example .env.production
 
 RUN npm run build
+
+COPY env.sh /app/env.sh
+RUN chmod +x /app/env.sh
+
 EXPOSE 3000
-CMD [ "serve", "-s", "dist" ]
+CMD ["/app/env.sh"]
