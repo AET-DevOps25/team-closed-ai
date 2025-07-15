@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: {{ $.Release.Name }}-task-service
+      annotations:
+        redeployAt: "{{ now | unixEpoch }}"
     spec:
       containers:
         - name: task-service
