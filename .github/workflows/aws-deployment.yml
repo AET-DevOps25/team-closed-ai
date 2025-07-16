@@ -29,6 +29,10 @@ jobs:
           mkdir -p ~/.aws
           echo "${{ github.event.inputs.AWS_CLI }}" > ~/.aws/credentials
 
+      - name: Cat AWS credentials
+        shell: bash
+        run: cat ~/.aws/credentials
+
       - name: Build .env by merging secrets and constants
         working-directory: ./genai
         shell: bash
