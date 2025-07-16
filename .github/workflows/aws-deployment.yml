@@ -3,8 +3,16 @@ name: Deploy to AWS
 on:
   workflow_dispatch:
     inputs:
-      AWS_CLI:
-        description: "Copy the AWS CLI secret from the AWS Academy Learner Lab and paste it here"
+      AWS_ACCESS_KEY_ID:
+        description: "AWS Access Key ID"
+        required: true
+        type: string
+      AWS_SECRET_ACCESS_KEY:
+        description: "AWS Secret Access Key"
+        required: true
+        type: string
+      AWS_SESSION_TOKEN:
+        description: "AWS Session Token"
         required: true
         type: string
 
@@ -17,23 +25,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Mask AWS_CLI input
+      - name: Mask AWS inputs
         shell: bash
         run: |
-          SECRET=$(jq -r '.inputs.AWS_CLI' < "$GITHUB_EVENT_PATH")
-          echo "::add-mask::$SECRET"
+          AWS_ID=$(jq -r '.inputs.AWS_ACCESS_KEY_ID' < "$GITHUB_EVENT_PATH")
+          AWS_SECRET=$(jq -r '.inputs.AWS_SECRET_ACCESS_KEY' < "$GITHUB_EVENT_PATH")
+          AWS_TOKEN=$(jq -r '.inputs.AWS_SESSION_TOKEN' < "$GITHUB_EVENT_PATH")
 
-      - name: Write AWS CLI credentials
-        shell: bash
-        run: |
-          mkdir -p $HOME/.aws
-          echo "${{ github.event.inputs.AWS_CLI }}" > $HOME/.aws/credentials
+          echo "::add-mask::$AWS_ID"
+          echo "::add-mask::$AWS_SECRET"
+          echo "::add-mask::$AWS_TOKEN"
 
-      - name: Debug AWS credentials
-        shell: bash
-        run: |
-          echo "AWS credentials written to $HOME/.aws/credentials"
-          cat ~/.aws/credentials
+          echo "AWS_ACCESS_KEY_ID=$AWS_ID" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=$AWS_TOKEN" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
 
       - name: Build .env by merging secrets and constants
         working-directory: ./genai
@@ -52,15 +65,6 @@ jobs:
           echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
           chmod 600 $HOME/.ssh/closedai-deployer
 
-      - name: Test AWS config
-        shell: bash
-        env:
-          AWS_SDK_LOAD_CONFIG: "true"
-          AWS_SHARED_CREDENTIALS_FILE: "$HOME/.aws/credentials"
-          AWS_PROFILE: "default"
-        run: |
-          aws configure list
-
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -68,12 +72,6 @@ jobs:
         working-directory: ./terraform
         shell: bash
         run: terraform init
-
-      - name: Debug AWS credentials
-        shell: bash
-        run: |
-          echo "AWS credentials written to $HOME/.aws/credentials"
-          cat ~/.aws/credentials
 
       - name: Terraform apply
         working-directory: ./terraform
