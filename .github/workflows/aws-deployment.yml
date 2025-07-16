@@ -26,7 +26,7 @@ jobs:
       - name: Write AWS CLI credentials
         shell: bash
         run: |
-          mkdir -p ~/.aws
+          mkdir -p $HOME/.aws
           echo "${{ github.event.inputs.AWS_CLI }}" > $HOME/.aws/credentials
 
       - name: Cat AWS credentials
@@ -46,9 +46,9 @@ jobs:
       - name: Copy Private Deployer Key
         shell: bash
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/closedai-deployer
-          chmod 600 ~/.ssh/closedai-deployer
+          mkdir -p $HOME/.ssh
+          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
+          chmod 600 $HOME/.ssh/closedai-deployer
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
