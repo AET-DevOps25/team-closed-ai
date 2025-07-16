@@ -83,7 +83,8 @@ jobs:
         working-directory: ./terraform
         shell: bash
         run: |
-          echo "ELASTIC_IP=$(terraform output -raw elastic_ip)" >> $GITHUB_ENV
+          IP=$(terraform output -raw elastic_ip)
+          echo "ELASTIC_IP=$IP" >> $GITHUB_ENV
 
       - name: Run Ansible
         working-directory: ./ansible
