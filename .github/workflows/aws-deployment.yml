@@ -60,7 +60,6 @@ jobs:
         env:
           AWS_SDK_LOAD_CONFIG: "true"
           AWS_SHARED_CREDENTIALS_FILE: "$HOME/.aws/credentials"
-          AWS_PROFILE: "default"
         run: terraform apply -auto-approve
 
       - name: Get IP
