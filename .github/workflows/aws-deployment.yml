@@ -52,9 +52,14 @@ jobs:
           echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
           chmod 600 $HOME/.ssh/closedai-deployer
 
-      - name: aws configure list
+      - name: Test AWS config
         shell: bash
-        run: aws configure list
+        env:
+          AWS_SDK_LOAD_CONFIG: "true"
+          AWS_SHARED_CREDENTIALS_FILE: "$HOME/.aws/credentials"
+          AWS_PROFILE: "default"
+        run: |
+          aws configure list
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
