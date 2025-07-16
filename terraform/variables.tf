@@ -10,7 +10,7 @@ variable "key_name" {
 
 variable "public_key_path" {
   type    = string
-  default = "~/.ssh/closedai-deployer.pub"
+  default = "./closedai-deployer.pub"
 }
 
 variable "instance_type" {

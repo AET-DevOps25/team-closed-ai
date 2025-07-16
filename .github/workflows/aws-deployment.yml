@@ -1,0 +1,72 @@
+name: Deploy to AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+      AWS_CLI:
+        description: "Copy the AWS CLI secret from the AWS Academy Learner Lab and paste it here"
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Copy AWS CLI into ~/.aws/credentials
+        shell: bash
+        run: |
+          mkdir -p ~/.aws
+          echo ${{ github.event.inputs.AWS_CLI }} > ~/.aws/credentials
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        working-directory: ./terraform
+        shell: bash
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: ./terraform
+        shell: bash
+        run: terraform apply -auto-approve
+
+      - name: Get IP
+        id: extract_ip
+        working-directory: ./terraform
+        shell: bash
+        run: |
+          echo "ELASTIC_IP=$(terraform output -raw elastic_ip)" >> $GITHUB_ENV
+
+      - name: Copy genai .env.aws file to .env and add secrets
+        working-directory: ./genai
+        shell: bash
+        env:
+          OLLAMA_LLM_KEY: ${{ secrets.OLLAMA_LLM_KEY }}
+        run: |
+          cp .env.aws .env
+          echo "OLLAMA_LLM_KEY=$OLLAMA_LLM_KEY\n" >> .env
+
+      - name: Copy Private Deployer Key
+        shell: bash
+        env:
+          CLOSEDAI_DEPLOYER_PRIVATE_KEY: ${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$CLOSEDAI_DEPLOYER_PRIVATE_KEY" > ~/.ssh/closedai-deployer
+          chmod 600 ~/.ssh/closedai-deployer
+
+      - name: Run Ansible
+        working-directory: ./ansible
+        shell: bash
+        env:
+          ELASTIC_IP: ${{ env.ELASTIC_IP }}
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ansible-playbook -i inventory.ini playbook.yml \
+            --extra-vars "elastic_ip=$ELASTIC_IP"
