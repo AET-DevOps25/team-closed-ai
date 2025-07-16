@@ -90,32 +90,18 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - traefik-net
-    healthcheck:
-      test: [
-        "CMD-SHELL",
-        "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -tAc \"SELECT 1 FROM information_schema.tables WHERE table_name='task';\" | grep -q 1"
-      ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   genai:
     image: ghcr.io/aet-devops25/team-closed-ai/genai-service:latest
     env_file:
       - ./genai/.env
     depends_on:
-      postgres:
-        condition: service_healthy
-      ollama:
-        condition: service_started
-      task-service:
-        condition: service_started
-      project-service:
-        condition: service_started
-      user-service:
-        condition: service_started
-      vectorizer-worker:
-        condition: service_started
+      - postgres
+      - ollama
+      - task-service
+      - project-service
+      - user-service
+      - vectorizer-worker
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
@@ -124,8 +110,8 @@ services:
       - "traefik.http.services.genai.loadbalancer.server.port=8084"
     networks:
       - traefik-net
+    restart: unless-stopped
 
-  
   vectorizer-worker:
     image: timescale/pgai-vectorizer-worker:latest
     env_file:
