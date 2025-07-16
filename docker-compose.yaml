@@ -2,11 +2,9 @@ services:
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: local.Dockerfile
     ports:
       - "5173:3000"
-    environment:
-      - VITE_API_URL=https://closed-ai.student.k8s.aet.cit.tum.de/
 
   traefik:
     image: traefik:v3.4.1

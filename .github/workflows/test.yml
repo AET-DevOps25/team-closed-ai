@@ -19,4 +19,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        run: cd server && ./gradlew build
+        run: cd server && ./gradlew test

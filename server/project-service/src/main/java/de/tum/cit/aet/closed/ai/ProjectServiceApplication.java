@@ -1,4 +1,3 @@
-
 package de.tum.cit.aet.closed.ai;
 
 import org.springframework.boot.SpringApplication;
@@ -9,8 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class ProjectServiceApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ProjectServiceApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(ProjectServiceApplication.class, args);
+  }
 }
