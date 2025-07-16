@@ -383,3 +383,12 @@ sketch
 # Recommended template: Node.gitignore
 
 serverdb
+
+# Terraform files
+# Ignore Terraform state files and backups
+*.tfstate
+*.tfstate.backup
+*.tfplan
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+.terraform/
