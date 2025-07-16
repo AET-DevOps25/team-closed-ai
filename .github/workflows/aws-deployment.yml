@@ -19,6 +19,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    environment: aws deployment
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
