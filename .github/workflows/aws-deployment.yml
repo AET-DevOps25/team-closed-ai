@@ -20,7 +20,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     environment:
-      name: aws deployment
+      name: aws
       url: ${{ steps.extract_ip.outputs.url }}
     steps:
       - name: Checkout repository
@@ -98,4 +98,6 @@ jobs:
       - name: Terraform destroy on Ansible failure
         if: ${{ steps.ansible.outcome == 'failure' }}
         working-directory: ./terraform
-        run: terraform destroy -auto-approve
+        run: |
+          terraform destroy -auto-approve
+          exit 1
