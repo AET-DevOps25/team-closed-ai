@@ -19,7 +19,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    environment: aws deployment
+    environment:
+      name: aws deployment
+      url: ${{ steps.extract_ip.outputs.url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -27,7 +29,6 @@ jobs:
           fetch-depth: 0
 
       - name: Mask AWS inputs
-        shell: bash
         run: |
           AWS_ID=$(jq -r '.inputs.AWS_ACCESS_KEY_ID' < "$GITHUB_EVENT_PATH")
           AWS_SECRET=$(jq -r '.inputs.AWS_SECRET_ACCESS_KEY' < "$GITHUB_EVENT_PATH")
@@ -51,7 +52,6 @@ jobs:
 
       - name: Build .env by merging secrets and constants
         working-directory: ./genai
-        shell: bash
         run: |
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
@@ -60,7 +60,6 @@ jobs:
           cat .env.aws >> .env
 
       - name: Copy Private Deployer Key
-        shell: bash
         run: |
           mkdir -p $HOME/.ssh
           echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
@@ -71,28 +70,32 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        shell: bash
         run: terraform init
 
       - name: Terraform apply
         working-directory: ./terraform
-        shell: bash
         run: terraform apply -auto-approve
 
       - name: Get IP
         id: extract_ip
         working-directory: ./terraform
-        shell: bash
         run: |
           IP=$(terraform output -raw elastic_ip | grep -oP '\d+\.\d+\.\d+\.\d+' | head -n1)
           echo "ELASTIC_IP=$IP" >> $GITHUB_ENV
+          echo "url=http://$IP" >> $GITHUB_OUTPUT
 
       - name: Run Ansible
+        id: ansible
+        continue-on-error: true
         working-directory: ./ansible
-        shell: bash
         env:
           ELASTIC_IP: ${{ env.ELASTIC_IP }}
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
           ansible-playbook -i inventory.yml playbook.yml \
             --extra-vars "elastic_ip=${ELASTIC_IP}"
+
+      - name: Terraform destroy on Ansible failure
+        if: ${{ steps.ansible.outcome == 'failure' }}
+        working-directory: ./terraform
+        run: terraform destroy -auto-approve

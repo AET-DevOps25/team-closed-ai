@@ -1,5 +1,6 @@
 - name: Deploy app via Docker Compose
   hosts: app
+  gather_facts: false
   become: true
   tasks:
     - name: Wait for the host to be reachable
@@ -7,6 +8,9 @@
         sleep: 5
         delay: 10
         timeout: 300
+
+    - name: Gather facts once SSH is reachable
+      ansible.builtin.setup:
 
     - name: Ensure apt cache is up-to-date
       ansible.builtin.apt:
