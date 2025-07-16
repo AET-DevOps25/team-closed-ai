@@ -73,17 +73,12 @@ jobs:
         shell: bash
         run: terraform init
 
-      - name: Terraform apply
-        working-directory: ./terraform
-        shell: bash
-        run: terraform apply -auto-approve
-
-      - name: Get IP
-        id: extract_ip
+      - name: Terraform apply & IP extraction
         working-directory: ./terraform
         shell: bash
         run: |
-          IP=$(terraform output -raw elastic_ip)
+          terraform apply -auto-approve > apply.log
+          IP=$(grep -oP '\d+\.\d+\.\d+\.\d+' apply.log | head -n1)
           echo "ELASTIC_IP=$IP" >> $GITHUB_ENV
 
       - name: Run Ansible
