@@ -43,22 +43,21 @@ jobs:
         run: |
           echo "ELASTIC_IP=$(terraform output -raw elastic_ip)" >> $GITHUB_ENV
 
-      - name: Copy genai .env.aws file to .env and add secrets
+      - name: Build .env by merging secrets and constants
         working-directory: ./genai
         shell: bash
-        env:
-          OLLAMA_LLM_KEY: ${{ secrets.OLLAMA_LLM_KEY }}
         run: |
-          cp .env.aws .env
-          echo "OLLAMA_LLM_KEY=$OLLAMA_LLM_KEY\n" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "OLLAMA_LLM_KEY=${{ secrets.OLLAMA_LLM_KEY }}" >> .env
+          cat .env.aws >> .env
 
       - name: Copy Private Deployer Key
         shell: bash
-        env:
-          CLOSEDAI_DEPLOYER_PRIVATE_KEY: ${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$CLOSEDAI_DEPLOYER_PRIVATE_KEY" > ~/.ssh/closedai-deployer
+          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/closedai-deployer
           chmod 600 ~/.ssh/closedai-deployer
 
       - name: Run Ansible
@@ -69,4 +68,4 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
           ansible-playbook -i inventory.ini playbook.yml \
-            --extra-vars "elastic_ip=$ELASTIC_IP"
+            --extra-vars "elastic_ip=${ELASTIC_IP}"
