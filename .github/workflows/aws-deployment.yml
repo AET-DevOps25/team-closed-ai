@@ -93,6 +93,7 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
           ansible-playbook -i inventory.yml playbook.yml \
+            --ssh-extra-args='-o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=30 -o ServerAliveCountMax=3' \
             --extra-vars "elastic_ip=${ELASTIC_IP}"
 
       - name: Terraform destroy on Ansible failure
