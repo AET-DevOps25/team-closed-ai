@@ -385,8 +385,9 @@ sketch
 
 serverdb
 
+helm/*/charts
+
 # Terraform files
-# Ignore Terraform state files and backups
 *.tfstate
 *.tfstate.backup
 *.tfplan

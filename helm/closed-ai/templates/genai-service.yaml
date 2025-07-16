@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-genai-service
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-genai-service
+  template:
+    metadata:
+      labels:
+        app: {{ $.Release.Name }}-genai-service
+      annotations:
+        redeployAt: "{{ now | unixEpoch }}"
+    spec:
+      containers:
+        - name: genai-service
+          image: "{{ $.Values.services.genai.image.repository }}:{{ $.Values.services.genai.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.services.genai.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ $.Release.Name }}-config
+            - secretRef:
+                name: {{ $.Release.Name }}-secret
+            - secretRef:
+                name: gen-ai-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-genai-service
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $.Release.Name }}-genai-service
+  ports:
+    - port: {{ $.Values.services.genai.port }}
+      targetPort: {{ $.Values.services.genai.port }}
+  type: ClusterIP
