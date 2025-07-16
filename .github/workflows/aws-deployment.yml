@@ -93,5 +93,5 @@ jobs:
           ELASTIC_IP: ${{ env.ELASTIC_IP }}
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          ansible-playbook -i inventory.ini playbook.yml \
+          ansible-playbook -i inventory.yml playbook.yml \
             --extra-vars "elastic_ip=${ELASTIC_IP}"
