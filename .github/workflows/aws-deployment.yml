@@ -29,6 +29,12 @@ jobs:
           mkdir -p $HOME/.aws
           echo "${{ github.event.inputs.AWS_CLI }}" > $HOME/.aws/credentials
 
+      - name: Debug AWS credentials
+        shell: bash
+        run: |
+          echo "AWS credentials written to $HOME/.aws/credentials"
+          cat ~/.aws/credentials
+
       - name: Build .env by merging secrets and constants
         working-directory: ./genai
         shell: bash
@@ -53,6 +59,12 @@ jobs:
         working-directory: ./terraform
         shell: bash
         run: terraform init
+
+      - name: Debug AWS credentials
+        shell: bash
+        run: |
+          echo "AWS credentials written to $HOME/.aws/credentials"
+          cat ~/.aws/credentials
 
       - name: Terraform apply
         working-directory: ./terraform
