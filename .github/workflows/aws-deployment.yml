@@ -23,6 +23,23 @@ jobs:
           mkdir -p ~/.aws
           echo ${{ github.event.inputs.AWS_CLI }} > ~/.aws/credentials
 
+      - name: Build .env by merging secrets and constants
+        working-directory: ./genai
+        shell: bash
+        run: |
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "OLLAMA_LLM_KEY=${{ secrets.OLLAMA_LLM_KEY }}" >> .env
+          cat .env.aws >> .env
+
+      - name: Copy Private Deployer Key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/closedai-deployer
+          chmod 600 ~/.ssh/closedai-deployer
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -42,23 +59,6 @@ jobs:
         shell: bash
         run: |
           echo "ELASTIC_IP=$(terraform output -raw elastic_ip)" >> $GITHUB_ENV
-
-      - name: Build .env by merging secrets and constants
-        working-directory: ./genai
-        shell: bash
-        run: |
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "OLLAMA_LLM_KEY=${{ secrets.OLLAMA_LLM_KEY }}" >> .env
-          cat .env.aws >> .env
-
-      - name: Copy Private Deployer Key
-        shell: bash
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/closedai-deployer
-          chmod 600 ~/.ssh/closedai-deployer
 
       - name: Run Ansible
         working-directory: ./ansible
