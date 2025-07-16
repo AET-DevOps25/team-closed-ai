@@ -52,6 +52,10 @@ jobs:
           echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
           chmod 600 $HOME/.ssh/closedai-deployer
 
+      - name: aws configure list
+        shell: bash
+        run: aws configure list
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -69,9 +73,6 @@ jobs:
       - name: Terraform apply
         working-directory: ./terraform
         shell: bash
-        env:
-          AWS_SDK_LOAD_CONFIG: "true"
-          AWS_SHARED_CREDENTIALS_FILE: "$HOME/.aws/credentials"
         run: terraform apply -auto-approve
 
       - name: Get IP
