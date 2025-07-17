@@ -38,9 +38,9 @@ services:
       - "traefik.http.routers.project.rule=PathPrefix(`/projects`)"
       - "traefik.http.services.project.loadbalancer.server.port=8083"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_PROFILES_ACTIVE=shared,shared-docker
     networks:
@@ -55,9 +55,9 @@ services:
       - "traefik.http.routers.user.rule=PathPrefix(`/users`)"
       - "traefik.http.services.user.loadbalancer.server.port=8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_PROFILES_ACTIVE=shared,shared-docker
     networks:
@@ -72,9 +72,9 @@ services:
       - "traefik.http.routers.task.rule=PathPrefix(`/tasks`)"
       - "traefik.http.services.task.loadbalancer.server.port=8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/closedai
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_PROFILES_ACTIVE=shared,shared-docker
     networks:
@@ -82,10 +82,8 @@ services:
 
   postgres:
     image: pgvector/pgvector:pg16
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=closedai
+    env_file:
+      - ./docker-compose.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -138,3 +136,4 @@ services:
 volumes:
   postgres_data:
   ollama_data:
+  

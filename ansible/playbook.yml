@@ -58,6 +58,14 @@
         group: ubuntu
         mode: "0644"
 
+    - name: Copy Postgres env file
+      copy:
+        src: ../postgresql.env
+        dest: /home/ubuntu/postgresql.env
+        owner: ubuntu
+        group: ubuntu
+        mode: "0600"
+
     - name: Ensure genai directory exists
       ansible.builtin.file:
         path: /home/ubuntu/genai
@@ -82,6 +90,8 @@
         project_src: /home/ubuntu
         files:
           - docker-compose.yaml
+        env_files:
+          - postgresql.env
         state: present
         assume_yes: true
       environment:

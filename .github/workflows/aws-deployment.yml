@@ -42,6 +42,15 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET" >> $GITHUB_ENV
           echo "AWS_SESSION_TOKEN=$AWS_TOKEN" >> $GITHUB_ENV
 
+      - name: Create .env file with secrets for Compose
+        working-directory: .
+        run: |
+          cat <<EOF > postgresql.env
+          POSTGRES_USER=${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB=${{ secrets.DB_NAME }}
+          EOF
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
