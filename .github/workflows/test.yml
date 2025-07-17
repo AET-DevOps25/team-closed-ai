@@ -34,5 +34,4 @@ jobs:
             server/user-service/build/reports/jacoco/
             server/project-service/build/reports/jacoco/
             server/task-service/build/reports/jacoco/
-
-# server/common/build/reports/jacoco/ TODO: Add tests
+            server/common/build/reports/jacoco/
