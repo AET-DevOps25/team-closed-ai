@@ -83,7 +83,7 @@ services:
   postgres:
     image: pgvector/pgvector:pg16
     env_file:
-      - ./docker-compose.env
+      - ./postgresql.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -136,4 +136,3 @@ services:
 volumes:
   postgres_data:
   ollama_data:
-  
