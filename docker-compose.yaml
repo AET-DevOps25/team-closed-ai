@@ -101,6 +101,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
       - "traefik.http.services.genai.loadbalancer.server.port=8084"
+    restart: unless-stopped
   
   vectorizer-worker:
     image: timescale/pgai-vectorizer-worker:latest
