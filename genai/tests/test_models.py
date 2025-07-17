@@ -7,10 +7,10 @@ def test_prompt_request_creation():
     project_id = "test-project"
     user_id = "test-user"
     prompt = "Create a new task"
-    
+
     # Act
     request = PromptRequest(project_id=project_id, user_id=user_id, prompt=prompt)
-    
+
     # Assert
     assert request.project_id == project_id
     assert request.user_id == user_id
@@ -21,10 +21,10 @@ def test_prompt_request_without_user_id():
     # Arrange
     project_id = "test-project"
     prompt = "Create a new task"
-    
+
     # Act
     request = PromptRequest(project_id=project_id, prompt=prompt)
-    
+
     # Assert
     assert request.project_id == project_id
     assert request.user_id is None
@@ -37,15 +37,12 @@ def test_genai_response_creation():
     answer = "I'll create a new task for you"
     existing_tasks = []
     new_tasks = []
-    
+
     # Act
     response = GenAIResponse(
-        intent=intent,
-        answer=answer,
-        existing_tasks=existing_tasks,
-        new_tasks=new_tasks
+        intent=intent, answer=answer, existing_tasks=existing_tasks, new_tasks=new_tasks
     )
-    
+
     # Assert
     assert response.intent == intent
     assert response.answer == answer
@@ -56,10 +53,10 @@ def test_genai_response_creation():
 def test_intent_result_generation():
     # Arrange
     intent = IntentType.generation
-    
+
     # Act
     result = IntentResult(intent=intent)
-    
+
     # Assert
     assert result.intent == IntentType.generation
 
@@ -67,10 +64,10 @@ def test_intent_result_generation():
 def test_intent_result_answering():
     # Arrange
     intent = IntentType.answering
-    
+
     # Act
     result = IntentResult(intent=intent)
-    
+
     # Assert
     assert result.intent == IntentType.answering
 
