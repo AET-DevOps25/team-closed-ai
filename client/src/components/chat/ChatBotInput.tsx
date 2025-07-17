@@ -43,20 +43,20 @@ const ChatBotInput = ({ projectId, userId }: ChatBotInputProps) => {
   };
 
   return (
-    <div className="p-4 border-t flex-shrink-0">
-      <div className="flex gap-2 items-center">
+    <div className="p-4 border-t border-border flex-shrink-0">
+      <div className="flex w-full max-w-sm items-center gap-2">
         <Input
+          type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           disabled={isLoading}
-          className="flex-1"
         />
         <Button
+          type="submit"
           onClick={handleSendMessage}
           disabled={!inputMessage.trim() || isLoading}
-          size="sm"
         >
           <Send className="w-4 h-4" />
         </Button>

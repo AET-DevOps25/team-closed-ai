@@ -22,7 +22,10 @@ const ChatBot = ({ isOpen, onClose, projectId, user }: ChatBotProps) => {
   if (!isOpen) return null;
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 max-h-[80vh] min-h-96 shadow-lg z-50 flex flex-col">
+    <Card
+      className="fixed bottom-4 right-4 w-96 max-h-[80vh] min-h-96 shadow-lg z-50 flex flex-col"
+      style={{ padding: "0px", gap: "0px" }}
+    >
       <CardHeader className="flex flex-row items-center justify-between p-4 flex-shrink-0">
         <CardTitle className="text-lg">AI Assistant</CardTitle>
         <div className="flex gap-2">
@@ -45,7 +48,7 @@ const ChatBot = ({ isOpen, onClose, projectId, user }: ChatBotProps) => {
             {chatHistory.length === 0 && (
               <div className="flex items-end gap-2">
                 <ChatBotAvatar user={null} />
-                <div className="flex-1 bg-gray-100 rounded-lg p-3">
+                <div className="flex-1 bg-muted rounded-lg p-3">
                   <p className="text-sm">
                     Hi! I'm your AI assistant. I can help you with questions
                     about your project or create new tasks. Just tell me what
@@ -62,8 +65,15 @@ const ChatBot = ({ isOpen, onClose, projectId, user }: ChatBotProps) => {
             {isLoading && (
               <div className="flex items-end gap-2">
                 <ChatBotAvatar user={null} />
-                <div className="flex-1 bg-gray-100 rounded-lg p-3">
-                  <p className="text-sm">Thinking...</p>
+                <div className="flex-1 bg-muted rounded-lg p-3">
+                  <p className="text-sm flex items-center">
+                    Thinking
+                    <span className="ml-1 flex">
+                      <span className="animate-bounce delay-0">.</span>
+                      <span className="animate-bounce delay-150">.</span>
+                      <span className="animate-bounce delay-300">.</span>
+                    </span>
+                  </p>
                 </div>
               </div>
             )}

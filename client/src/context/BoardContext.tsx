@@ -12,6 +12,7 @@ import { useUser } from "./UserContext";
 import { useProject } from "@/context/ProjectContext";
 import type { AddTaskDto, TaskDto } from "@/api/server";
 import { mapTaskDtoToTask } from "@/utils/type-mappers";
+import ViewTaskDialog from "@/components/board/ViewTaskDialog";
 
 interface BoardContextType {
   tasks: Task[];
@@ -22,6 +23,7 @@ interface BoardContextType {
   moveTask: (taskId: number, newState: TaskStatus) => Promise<void>;
   getTaskById: (id: number) => Task | undefined;
   refetch: () => Promise<void>;
+  openTaskDetails: (taskId: number) => void;
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined);
@@ -35,6 +37,8 @@ export const BoardProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -160,20 +164,38 @@ export const BoardProvider = ({ children }: { children: ReactNode }) => {
     return tasks.find((task) => task.id === id);
   };
 
+  const openTaskDetails = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setIsTaskDialogOpen(true);
+  };
+
+  const handleCloseTaskDialog = () => {
+    setIsTaskDialogOpen(false);
+    setSelectedTaskId(null);
+  };
+
+  const value = {
+    tasks,
+    loading,
+    error,
+    addTasks,
+    updateTask,
+    moveTask,
+    getTaskById,
+    refetch,
+    openTaskDetails,
+  };
+
   return (
-    <BoardContext.Provider
-      value={{
-        tasks,
-        loading,
-        error,
-        addTasks,
-        updateTask,
-        moveTask,
-        getTaskById,
-        refetch,
-      }}
-    >
+    <BoardContext.Provider value={value}>
       {children}
+      {selectedTaskId && (
+        <ViewTaskDialog
+          isOpen={isTaskDialogOpen}
+          onClose={handleCloseTaskDialog}
+          taskId={selectedTaskId}
+        />
+      )}
     </BoardContext.Provider>
   );
 };

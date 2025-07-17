@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useBoard } from "@/context/BoardContext";
 import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
+import ChatBotMarkdown from "./ChatBotMarkdown";
 
 interface ChatBotMessageProps {
   message: ChatMessage;
@@ -53,23 +54,23 @@ const ChatBotMessage = ({ message, user }: ChatBotMessageProps) => {
     >
       <ChatBotAvatar user={isUserMessage(message) ? user : null} />
       <div
-        className={`flex-1 rounded-lg p-3 ${isUserMessage(message) ? "bg-blue-400 text-right" : "bg-gray-100"}`}
+        className={`flex-1 rounded-lg p-3 ${isUserMessage(message) ? "bg-blue-500 dark:bg-blue-600 text-right" : "bg-muted"}`}
       >
         {isUserMessage(message) ? (
           <div>
             <p className="text-sm text-white">{message.content.prompt}</p>
-            <p className="text-xs text-white mt-1">
+            <p className="text-xs text-white/80 mt-1">
               {message.timestamp.toLocaleTimeString()}
             </p>
           </div>
         ) : isAiMessage(message) ? (
           <div>
-            <p className="text-sm">{message.content.answer}</p>
+            <ChatBotMarkdown message={message.content.answer} />
             {message.content.new_tasks &&
               message.content.new_tasks.length > 0 && (
                 <div className="mt-2">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-gray-600">
+                    <p className="text-xs font-semibold text-muted-foreground">
                       New Tasks:
                     </p>
                     <Button
@@ -93,7 +94,10 @@ const ChatBotMessage = ({ message, user }: ChatBotMessageProps) => {
                     </Button>
                   </div>
                   {message.content.new_tasks.map((task, index) => (
-                    <div key={index} className="text-xs text-gray-600 ml-2">
+                    <div
+                      key={index}
+                      className="text-xs text-muted-foreground ml-2"
+                    >
                       • {task.title}: {task.description}
                     </div>
                   ))}
@@ -102,18 +106,24 @@ const ChatBotMessage = ({ message, user }: ChatBotMessageProps) => {
             {message.content.existing_tasks &&
               message.content.existing_tasks.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-xs font-semibold text-gray-600">
+                  <p className="text-xs font-semibold text-muted-foreground">
                     Related Tasks:
                   </p>
                   {message.content.existing_tasks.map((task, index) => (
-                    <div key={index} className="text-xs text-gray-600 ml-2">
-                      • {task.title}: {task.description}
+                    <div
+                      key={index}
+                      className="text-xs text-muted-foreground ml-2"
+                    >
+                      •{" "}
+                      <ChatBotMarkdown
+                        message={`${task.title}: ${task.description}`}
+                      />
                     </div>
                   ))}
                 </div>
               )}
 
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {message.timestamp.toLocaleTimeString()}
             </p>
           </div>
