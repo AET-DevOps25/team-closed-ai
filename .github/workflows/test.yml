@@ -18,5 +18,21 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        run: cd server && ./gradlew test
+      - name: Test with Gradle and Check Coverage
+        run: cd server && ./gradlew check
+
+      - name: Generate JaCoCo Reports
+        if: always()
+        run: cd server && ./gradlew jacocoTestReport
+
+      - name: Upload JaCoCo Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            server/user-service/build/reports/jacoco/
+            server/project-service/build/reports/jacoco/
+            server/task-service/build/reports/jacoco/
+
+# server/common/build/reports/jacoco/ TODO: Add tests
