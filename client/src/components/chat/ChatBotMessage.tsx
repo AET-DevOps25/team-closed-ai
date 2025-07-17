@@ -8,6 +8,7 @@ import { useBoard } from "@/context/BoardContext";
 import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
 import ChatBotMarkdown from "./ChatBotMarkdown";
+import { CreateAllButton } from "./CreateAllButton";
 
 interface ChatBotMessageProps {
   message: ChatMessage;
@@ -73,25 +74,7 @@ const ChatBotMessage = ({ message, user }: ChatBotMessageProps) => {
                     <p className="text-xs font-semibold text-muted-foreground">
                       New Tasks:
                     </p>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-6 px-2 text-xs"
-                      onClick={handleCreateTasks}
-                      disabled={isCreatingTasks}
-                    >
-                      {isCreatingTasks ? (
-                        <>
-                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                          Creating...
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-3 h-3 mr-1" />
-                          Create All
-                        </>
-                      )}
-                    </Button>
+                    <CreateAllButton onCreateAll={handleCreateTasks} />
                   </div>
                   {message.content.new_tasks.map((task, index) => (
                     <div

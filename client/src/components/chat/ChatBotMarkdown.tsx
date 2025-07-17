@@ -18,7 +18,6 @@ const ChatBotMarkdown = ({ message }: ChatBotMarkdownProps) => {
       <ReactMarkdown
         components={{
           p: ({ children }) => {
-            console.log("Rendering text:", children);
             if (typeof children !== "string") {
               return children;
             }
