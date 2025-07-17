@@ -1,4 +1,4 @@
-import type { TaskDto, TaskStatus } from "@/api/server";
+import type { TaskDto } from "@/api/server";
 import type { Attachment } from "./attachment";
 import type { User } from "./user";
 import type { Comment } from "./comment";
