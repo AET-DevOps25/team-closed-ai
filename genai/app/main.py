@@ -1,15 +1,12 @@
 import logging
 
-import subprocess
-import sys
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models.base import PromptRequest, GenAIResponse
-from chain.classification import classify_prompt
-from models.intent import IntentType
-from chain.generation import generate_answer_and_tasks
-from chain.answering import answer_and_reference
+from app.models.base import PromptRequest, GenAIResponse
+from app.chain.classification import classify_prompt
+from app.models.intent import IntentType
+from app.chain.generation import generate_answer_and_tasks
+from app.chain.answering import answer_and_reference
 
 logger = logging.getLogger("GenAI Kanban Assistant")
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/health")
 def health():
@@ -52,15 +48,3 @@ def interpret(request: PromptRequest):
             existing_tasks=tasks,
             new_tasks=[],
         )
-
-
-# start uvicorn server and listen on port 8084
-if __name__ == "__main__":
-    # Runs the initialization script for PostgreSQL with PGAI
-    ret = subprocess.run([sys.executable, "pgai_vec/init_pgai.py"])
-    if ret.returncode != 0:
-        sys.exit(ret.returncode)
-
-    # Launch FastAPI with Uvicorn
-    logging.info("Starting GenAI Kanban Assistant on port 8084")
-    uvicorn.run("main:app", host="0.0.0.0", port=8084)

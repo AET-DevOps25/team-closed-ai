@@ -383,4 +383,3 @@ sketch
 # Recommended template: Node.gitignore
 
 serverdb
-helm/*/charts

@@ -6,14 +6,6 @@ RUN npm install
 RUN npm install esbuild@0.25.4 --save-exact
 RUN npm i -g serve
 COPY . .
-
-# Sets the API URL to the value of the VITE_API_URL environment variable
-RUN mv .env.production.example .env.production
-
 RUN npm run build
-
-COPY env.sh /app/env.sh
-RUN chmod +x /app/env.sh
-
 EXPOSE 3000
-CMD ["/app/env.sh"]
+CMD [ "serve", "-s", "dist" ]
