@@ -30,7 +30,7 @@ pytest tests/ -v
 
 Tests are automatically configured through:
 
-- `.env.test` - Contains test environment variables (in genai root directory)
+- `.env.test` - Contains test environment variables (in tests directory)
 - `conftest.py` - Loads environment variables and sets up Python path (in tests directory)
 
 ## Test Structure
