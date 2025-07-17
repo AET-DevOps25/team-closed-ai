@@ -18,7 +18,7 @@ app = FastAPI(title="GenAI Kanban Assistant", root_path="/genai")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "https://closed-ai.student.k8s.aet.cit.tum.de"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

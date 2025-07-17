@@ -26,7 +26,7 @@ const getStateColor = (state: string) => {
   }
 };
 
-const TaskCard = ({ task, isDragOverlay = false }: TaskCardProps) => {
+const TaskCard = ({ task }: TaskCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -47,17 +47,17 @@ const TaskCard = ({ task, isDragOverlay = false }: TaskCardProps) => {
         {...attributes}
         {...listeners}
         className={`p-4 mb-3 bg-card rounded-lg shadow-sm border border-border cursor-pointer hover:shadow-md transition-shadow touch-none select-none ${
-          isDragging || isDragOverlay ? "shadow-lg opacity-50" : ""
+          isDragging ? "opacity-0" : ""
         }`}
         onClick={openDialog}
       >
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-medium leading-tight text-foreground">
+        <div className="flex justify-between items-start mb-2 gap-2">
+          <h3 className="font-medium leading-tight text-foreground flex-1 min-w-0 line-clamp-3">
             {task.title}
           </h3>
           <Badge
             variant="secondary"
-            className={`text-xs ${getStateColor(task.taskStatus)}`}
+            className={`text-xs flex-shrink-0 ${getStateColor(task.taskStatus)}`}
           >
             {task.taskStatus.replace("_", " ")}
           </Badge>

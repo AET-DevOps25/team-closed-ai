@@ -8,7 +8,7 @@
     "dev:local": "vite --mode development",
     "dev:prod": "vite --mode production",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "preview": "vite preview"
   },
   "dependencies": {
