@@ -1,0 +1,98 @@
+- name: Deploy app via Docker Compose
+  hosts: app
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Wait for the host to be reachable
+      ansible.builtin.wait_for_connection:
+        sleep: 5
+        delay: 10
+        timeout: 300
+
+    - name: Gather facts once SSH is reachable
+      ansible.builtin.setup:
+
+    - name: Ensure apt cache is up-to-date
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Docker prerequisites
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker & Docker Compose
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: latest
+
+    - name: Add ubuntu user to docker group
+      ansible.builtin.user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Copy Docker Compose file
+      ansible.builtin.copy:
+        src: ../docker-compose.aws.yaml
+        dest: /home/ubuntu/docker-compose.yaml
+        owner: ubuntu
+        group: ubuntu
+        mode: "0644"
+
+    - name: Copy Postgres env file
+      copy:
+        src: ../postgresql.env
+        dest: /home/ubuntu/postgresql.env
+        owner: ubuntu
+        group: ubuntu
+        mode: "0600"
+
+    - name: Ensure genai directory exists
+      ansible.builtin.file:
+        path: /home/ubuntu/genai
+        state: directory
+
+    - name: Copy .env file for genai service
+      ansible.builtin.copy:
+        src: ../genai/.env
+        dest: /home/ubuntu/genai/.env
+        owner: ubuntu
+        group: ubuntu
+        mode: "0644"
+
+    - name: Ensure traefik-net Docker network exists
+      community.docker.docker_network:
+        name: traefik-net
+        driver: bridge
+        state: present
+
+    - name: Pull & run containers
+      community.docker.docker_compose_v2:
+        project_src: /home/ubuntu
+        files:
+          - docker-compose.yaml
+        env_files:
+          - postgresql.env
+        state: present
+        assume_yes: true
+      environment:
+        VITE_API_URL: "{{ ansible_host }}"
