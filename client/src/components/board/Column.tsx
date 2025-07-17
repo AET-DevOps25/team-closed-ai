@@ -41,7 +41,7 @@ const Column = ({ title, state, tasks }: ColumnProps) => {
       >
         <div
           ref={setNodeRef}
-          className={`p-3 flex-1 overflow-y-auto min-h-[200px] ${
+          className={`p-3 flex-1 min-h-[200px] overflow-hidden ${
             isOver ? "bg-muted/80" : ""
           }`}
         >
