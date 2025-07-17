@@ -3,29 +3,31 @@ import sys
 from unittest.mock import Mock, patch, MagicMock
 import psycopg2
 
-# Mock all the required modules before importing init_pgai
-mock_vectorizers = MagicMock()
-mock_vectorizers.get_vectorizers = MagicMock()
-sys.modules["vectorizers"] = mock_vectorizers
 
-# Mock the pgai module and its submodules
-mock_pgai = MagicMock()
-mock_pgai_vectorizer = MagicMock()
-mock_pgai_vectorizer.CreateVectorizer = MagicMock()
-sys.modules["pgai"] = mock_pgai
-sys.modules["pgai.vectorizer"] = mock_pgai_vectorizer
-
-# Now import the module
-from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers, main
+@pytest.fixture
+def mock_pgai_dependencies():
+    """Mock pgai dependencies with proper isolation"""
+    with patch.dict(sys.modules, {
+        'vectorizers': MagicMock(),
+        'pgai': MagicMock(),
+        'pgai.vectorizer': MagicMock()
+    }):
+        # Configure the mocks
+        sys.modules['vectorizers'].get_vectorizers = MagicMock()
+        sys.modules['pgai.vectorizer'].CreateVectorizer = MagicMock()
+        yield
 
 
 class TestVectorizerManager:
 
-    def test_init(self):
+    def test_init(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
+
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
 
         # Act
         manager = VectorizerManager(mock_conn)
@@ -35,11 +37,14 @@ class TestVectorizerManager:
         assert manager.cur == mock_cursor
         mock_conn.cursor.assert_called_once()
 
-    def test_ensure_sql_column(self):
+    def test_ensure_sql_column(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
+        
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -51,7 +56,7 @@ class TestVectorizerManager:
             "ADD COLUMN IF NOT EXISTS sql_creation_query TEXT;"
         )
 
-    def test_fetch_existing(self):
+    def test_fetch_existing(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
@@ -60,6 +65,9 @@ class TestVectorizerManager:
             ("vectorizer1", "CREATE VECTORIZER vectorizer1"),
             ("vectorizer2", "CREATE VECTORIZER vectorizer2"),
         ]
+        
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -74,11 +82,14 @@ class TestVectorizerManager:
             "SELECT name, sql_creation_query FROM ai.vectorizer;"
         )
 
-    def test_drop(self):
+    def test_drop(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
+        
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
         manager = VectorizerManager(mock_conn)
         vectorizer_name = "test_vectorizer"
 
@@ -90,11 +101,14 @@ class TestVectorizerManager:
             "SELECT ai.drop_vectorizer(%s, drop_all=>true);", (vectorizer_name,)
         )
 
-    def test_create(self):
+    def test_create(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
+        
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
         manager = VectorizerManager(mock_conn)
 
         mock_vectorizer = Mock()
@@ -112,11 +126,14 @@ class TestVectorizerManager:
             ("CREATE VECTORIZER test_vectorizer", "test_vectorizer"),
         )
 
-    def test_close(self):
+    def test_close(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
+        
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -128,13 +145,16 @@ class TestVectorizerManager:
 
 class TestSynchronizeVectorizers:
 
-    def test_synchronize_vectorizers_create_new(self):
+    def test_synchronize_vectorizers_create_new(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_vectorizer = Mock()
         mock_vectorizer.name = "new_vectorizer"
         mock_vectorizer.to_sql.return_value = "CREATE VECTORIZER new_vectorizer"
 
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
+        
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -152,12 +172,15 @@ class TestSynchronizeVectorizers:
         mock_manager.create.assert_called_once_with(mock_vectorizer)
         mock_manager.close.assert_called_once()
 
-    def test_synchronize_vectorizers_drop_unused(self):
+    def test_synchronize_vectorizers_drop_unused(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_vectorizer = Mock()
         mock_vectorizer.name = "new_vectorizer"
 
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
+        
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -175,13 +198,16 @@ class TestSynchronizeVectorizers:
         mock_manager.drop.assert_called_once_with("old_vectorizer")
         mock_manager.create.assert_called_once_with(mock_vectorizer)
 
-    def test_synchronize_vectorizers_update_existing(self):
+    def test_synchronize_vectorizers_update_existing(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
         mock_vectorizer = Mock()
         mock_vectorizer.name = "test_vectorizer"
         mock_vectorizer.to_sql.return_value = "NEW CREATE VECTORIZER test_vectorizer"
 
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
+        
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -202,8 +228,11 @@ class TestSynchronizeVectorizers:
 
 class TestMain:
 
-    def test_main_no_db_url(self):
+    def test_main_no_db_url(self, mock_pgai_dependencies):
         # Arrange
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import main
+        
         with patch("pgai_vec.init_pgai.DB_URL", None):
             # Act
             result = main()
@@ -211,10 +240,13 @@ class TestMain:
         # Assert
         assert result is None
 
-    def test_main_success(self):
+    def test_main_success(self, mock_pgai_dependencies):
         # Arrange
         mock_conn = Mock()
 
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import main
+        
         with patch("pgai_vec.init_pgai.DB_URL", "test://db"):
             with patch("pgai_vec.init_pgai.pgai") as mock_pgai:
                 with patch("pgai_vec.init_pgai.psycopg2") as mock_psycopg2:
@@ -234,8 +266,11 @@ class TestMain:
         mock_sync.assert_called_once_with(mock_conn)
         mock_conn.commit.assert_called_once()
 
-    def test_main_database_error(self):
+    def test_main_database_error(self, mock_pgai_dependencies):
         # Arrange
+        # Import and test the function with proper isolation
+        from pgai_vec.init_pgai import main
+        
         with patch("pgai_vec.init_pgai.DB_URL", "test://db"):
             with patch("pgai_vec.init_pgai.pgai") as mock_pgai:
                 with patch("pgai_vec.init_pgai.psycopg2") as mock_psycopg2:
