@@ -24,12 +24,9 @@ jobs:
   lint-server:
     name: Check Server Code with Spotless
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [project, task, user]
     defaults:
       run:
-        working-directory: server/${{ matrix.service }}-service
+        working-directory: server
     steps:
       - uses: actions/checkout@v4
       - name: Set up Java
@@ -38,7 +35,7 @@ jobs:
           distribution: "temurin"
           java-version: "21"
       - name: Run Spotless Check
-        run: ../gradlew spotlessCheck
+        run: ./gradlew spotlessCheck
 
   lint-genai:
     name: Check GenAI Code with Black
