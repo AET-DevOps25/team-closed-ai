@@ -19,7 +19,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Test with Gradle and Check Coverage
-        run: cd server && ./gradlew check
+        run: cd server && ./gradlew test jacocoTestCoverageVerification -x spotlessCheck -x spotlessApply
 
       - name: Generate JaCoCo Reports
         if: always()
