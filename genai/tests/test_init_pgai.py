@@ -7,14 +7,17 @@ import psycopg2
 @pytest.fixture
 def mock_pgai_dependencies():
     """Mock pgai dependencies with proper isolation"""
-    with patch.dict(sys.modules, {
-        'vectorizers': MagicMock(),
-        'pgai': MagicMock(),
-        'pgai.vectorizer': MagicMock()
-    }):
+    with patch.dict(
+        sys.modules,
+        {
+            "vectorizers": MagicMock(),
+            "pgai": MagicMock(),
+            "pgai.vectorizer": MagicMock(),
+        },
+    ):
         # Configure the mocks
-        sys.modules['vectorizers'].get_vectorizers = MagicMock()
-        sys.modules['pgai.vectorizer'].CreateVectorizer = MagicMock()
+        sys.modules["vectorizers"].get_vectorizers = MagicMock()
+        sys.modules["pgai.vectorizer"].CreateVectorizer = MagicMock()
         yield
 
 
@@ -42,9 +45,10 @@ class TestVectorizerManager:
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
-        
+
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager
+
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -65,9 +69,10 @@ class TestVectorizerManager:
             ("vectorizer1", "CREATE VECTORIZER vectorizer1"),
             ("vectorizer2", "CREATE VECTORIZER vectorizer2"),
         ]
-        
+
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager
+
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -87,9 +92,10 @@ class TestVectorizerManager:
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
-        
+
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager
+
         manager = VectorizerManager(mock_conn)
         vectorizer_name = "test_vectorizer"
 
@@ -106,9 +112,10 @@ class TestVectorizerManager:
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
-        
+
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager
+
         manager = VectorizerManager(mock_conn)
 
         mock_vectorizer = Mock()
@@ -131,9 +138,10 @@ class TestVectorizerManager:
         mock_conn = Mock()
         mock_cursor = Mock()
         mock_conn.cursor.return_value = mock_cursor
-        
+
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager
+
         manager = VectorizerManager(mock_conn)
 
         # Act
@@ -154,7 +162,7 @@ class TestSynchronizeVectorizers:
 
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
-        
+
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -180,7 +188,7 @@ class TestSynchronizeVectorizers:
 
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
-        
+
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -207,7 +215,7 @@ class TestSynchronizeVectorizers:
 
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import VectorizerManager, synchronize_vectorizers
-        
+
         with patch("pgai_vec.init_pgai.VectorizerManager") as mock_manager_class:
             mock_manager = Mock()
             mock_manager_class.return_value = mock_manager
@@ -232,7 +240,7 @@ class TestMain:
         # Arrange
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import main
-        
+
         with patch("pgai_vec.init_pgai.DB_URL", None):
             # Act
             result = main()
@@ -246,7 +254,7 @@ class TestMain:
 
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import main
-        
+
         with patch("pgai_vec.init_pgai.DB_URL", "test://db"):
             with patch("pgai_vec.init_pgai.pgai") as mock_pgai:
                 with patch("pgai_vec.init_pgai.psycopg2") as mock_psycopg2:
@@ -270,7 +278,7 @@ class TestMain:
         # Arrange
         # Import and test the function with proper isolation
         from pgai_vec.init_pgai import main
-        
+
         with patch("pgai_vec.init_pgai.DB_URL", "test://db"):
             with patch("pgai_vec.init_pgai.pgai") as mock_pgai:
                 with patch("pgai_vec.init_pgai.psycopg2") as mock_psycopg2:
