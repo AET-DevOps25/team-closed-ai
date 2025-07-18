@@ -1,0 +1,54 @@
+@startuml Analysis_Object_Model
+
+skinparam ArrowFontSize 16
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam object {
+    FontSize 20
+    BackgroundColor white
+    AttributeFontSize 16
+    BorderColor black
+    ArrowColor black
+}
+
+object Project {
+    id
+    name
+    color
+    createdAt
+    updatedAt
+    createTask()
+}
+
+object Task {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+    comments
+    attachments
+    addComment()
+    addAttachment()
+}
+
+object User {
+    id
+    name
+    profilePicture
+    createdAt
+    updatedAt
+}
+
+object TaskStatus {
+    BACKLOG
+    OPEN
+    IN_PROGRESS
+    DONE
+}
+
+Project *-down- "*" Task : Tasks
+Task -left- User : assignee
+Task .right.> TaskStatus : status
+
+@enduml
