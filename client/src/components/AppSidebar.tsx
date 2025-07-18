@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, RefreshCw, AlertCircle } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +21,7 @@ import { UserProfileFooter } from "./users/UserProfileFooter";
 export function AppSidebar() {
   const { projects, selectedProject, loading, error, selectProject, refetch } =
     useProject();
+  const { theme } = useTheme();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -27,15 +29,22 @@ export function AppSidebar() {
     await refetch();
   };
 
+  // Determine which logo to show based on theme
+  const logoSrc =
+    theme === "dark" ? "/closedai-dark.svg" : "/closedai-light.svg";
+
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="relative">
-          <h1 className="text-2xl font-bold text-center">
-            <a href="/" className="hover:opacity-80 transition-opacity">
-              ClosedAI
-            </a>
-          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <img src={logoSrc} alt="ClosedAI Logo" className="h-8 w-8" />
+            <h1 className="text-2xl font-bold">
+              <a href="/" className="hover:opacity-80 transition-opacity">
+                ClosedAI
+              </a>
+            </h1>
+          </div>
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <ModeToggle />
           </div>

@@ -4,6 +4,7 @@ import subprocess
 import sys
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from models.base import PromptRequest, GenAIResponse
 from chain.classification import classify_prompt
 from models.intent import IntentType
@@ -13,10 +14,21 @@ from chain.answering import answer_and_reference
 logger = logging.getLogger("GenAI Kanban Assistant")
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="GenAI Kanban Assistant")
+app = FastAPI(title="GenAI Kanban Assistant", root_path="/genai")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://closed-ai.student.k8s.aet.cit.tum.de",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-@app.get("/healthz")
+@app.get("/health")
 def health():
     return {"status": "ok"}
 

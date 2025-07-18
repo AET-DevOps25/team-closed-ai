@@ -5,25 +5,26 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ProjectProvider } from "@/context/ProjectContext";
 import { UserProvider } from "@/context/UserContext";
+import { GenAiProvider } from "@/context/GenAiContext";
 import BoardPage from "./pages/BoardPage";
-//import NotFound from "./pages/NotFound";
 
 const App = () => (
   <TooltipProvider>
     <Sonner />
     <UserProvider>
       <ProjectProvider>
-        <SidebarProvider defaultOpen={true}>
-          <AppSidebar />
-          <main className="flex-1">
-            <BrowserRouter>
-              <Routes>
-                <Route path="*" element={<BoardPage />} />
-                {/*<Route path="*" element={<NotFound />} />*/}
-              </Routes>
-            </BrowserRouter>
-          </main>
-        </SidebarProvider>
+        <GenAiProvider>
+          <SidebarProvider defaultOpen={true}>
+            <AppSidebar />
+            <main className="flex-1">
+              <BrowserRouter>
+                <Routes>
+                  <Route path="*" element={<BoardPage />} />
+                </Routes>
+              </BrowserRouter>
+            </main>
+          </SidebarProvider>
+        </GenAiProvider>
       </ProjectProvider>
     </UserProvider>
   </TooltipProvider>

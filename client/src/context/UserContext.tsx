@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { useUserApi } from "@/hooks/use-user-api";
-import type { UserDto, CreateUserDto } from "@/api/api";
+import type { UserDto, CreateUserDto } from "@/api/server";
 import type { User } from "@/types";
 
 interface UserContextType {

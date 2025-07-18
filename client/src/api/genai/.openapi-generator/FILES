@@ -1,0 +1,17 @@
+.gitignore
+.npmignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/AddTaskDto.md
+docs/GenAIApi.md
+docs/GenAIResponse.md
+docs/HTTPValidationError.md
+docs/PromptRequest.md
+docs/TaskDto.md
+docs/TaskStatus.md
+docs/ValidationError.md
+docs/ValidationErrorLocInner.md
+git_push.sh
+index.ts

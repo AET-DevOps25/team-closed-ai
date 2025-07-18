@@ -8,7 +8,7 @@ import {
 import { useProjectApi } from "@/hooks/use-project-api";
 import type { Project } from "@/types";
 import { mapProjectDtoToProject } from "@/utils/type-mappers";
-import type { CreateProjectDto } from "@/api/api";
+import type { CreateProjectDto } from "@/api/server";
 
 interface ProjectContextType {
   projects: Project[];
