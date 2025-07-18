@@ -1,6 +1,7 @@
 package de.tum.cit.aet.closed.ai;
 
 import de.tum.cit.aet.closed.ai.exception.TaskNotFoundException;
+import de.tum.cit.aet.closed.ai.metrics.TaskMetrics;
 import de.tum.cit.aet.closed.ai.model.Task;
 import de.tum.cit.aet.closed.ai.model.TaskStatus;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class TaskService {
   private final TaskRepository tasks;
+  private final TaskMetrics taskMetrics;
 
   @Transactional(readOnly = true)
   public List<Task> findAll() {
@@ -32,6 +34,7 @@ public class TaskService {
   @Transactional
   public void delete(Long id) {
     tasks.deleteById(id);
+    taskMetrics.incrementTasksDeleted();
   }
 
   @Transactional(readOnly = true)

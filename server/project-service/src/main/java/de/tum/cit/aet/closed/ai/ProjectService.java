@@ -2,6 +2,7 @@ package de.tum.cit.aet.closed.ai;
 
 import de.tum.cit.aet.closed.ai.client.UserServiceClient;
 import de.tum.cit.aet.closed.ai.exception.ProjectNotFoundException;
+import de.tum.cit.aet.closed.ai.metrics.ProjectMetrics;
 import de.tum.cit.aet.closed.ai.model.Project;
 import de.tum.cit.aet.closed.ai.model.Task;
 import de.tum.cit.aet.closed.ai.model.TaskStatus;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
   private final ProjectRepository projectRepository;
   private final UserServiceClient userServiceClient;
+  private final ProjectMetrics projectMetrics;
 
   @Transactional(readOnly = true)
   public List<Project> findAll() {
@@ -39,6 +41,7 @@ public class ProjectService {
       throw new ProjectNotFoundException("No project found with ID " + id);
     }
     projectRepository.deleteById(id);
+    projectMetrics.incrementProjectsDeleted();
   }
 
   @Transactional
@@ -50,6 +53,7 @@ public class ProjectService {
             .orElseThrow(() -> new ProjectNotFoundException("No such project"));
 
     Task task = project.createTask(title, desc, taskStatus);
+    projectMetrics.incrementTasksCreated();
 
     if (assigneeId != null) {
       Optional<User> assignee =
@@ -78,6 +82,8 @@ public class ProjectService {
     Project project = new Project();
     project.setName(name);
     project.setColor(color);
-    return projectRepository.save(project);
+    Project savedProject = projectRepository.save(project);
+    projectMetrics.incrementProjectsCreated();
+    return savedProject;
   }
 }
