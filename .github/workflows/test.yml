@@ -35,3 +35,27 @@ jobs:
             server/project-service/build/reports/jacoco/
             server/task-service/build/reports/jacoco/
             server/common/build/reports/jacoco/
+
+  test-genai:
+    name: Run GenAI Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: cd genai && pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: cd genai && python -m pytest
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: genai/htmlcov/
