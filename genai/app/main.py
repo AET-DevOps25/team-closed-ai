@@ -16,25 +16,108 @@ import metrics.metrics as metrics
 logger = logging.getLogger("GenAI Kanban Assistant")
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="GenAI Kanban Assistant")
+app = FastAPI(
+    title="GenAI Kanban Assistant",
+    description="AI-powered service for intelligent Kanban task management and question answering",
+    tags_metadata=[
+        {"name": "Health", "description": "Health check and service status operations"},
+        {
+            "name": "AI Interpretation",
+            "description": "AI prompt interpretation for task generation and question answering",
+        },
+    ],
+)
 
 
-@app.get("/healthz")
+@app.get(
+    "/healthz",
+    tags=["Health"],
+    summary="Health Check",
+    description="Returns the health status of the GenAI service",
+    responses={
+        200: {
+            "description": "Service is healthy",
+            "content": {"application/json": {"example": {"status": "ok"}}},
+        }
+    },
+)
 def health():
+    """Check if the GenAI service is running and healthy"""
     return {"status": "ok"}
 
 
-@app.get("/metrics")
+  @app.get("/metrics")
 def get_metrics():
     """Prometheus metrics endpoint"""
     data = generate_latest()
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 
-
-@app.post("/interpret", response_model=GenAIResponse)
+@app.post(
+    "/interpret",
+    response_model=GenAIResponse,
+    tags=["AI Interpretation"],
+    summary="Interpret AI Prompt",
+    description="Processes a natural language prompt to either generate new tasks or answer questions about existing tasks",
+    responses={
+        200: {
+            "description": "Prompt successfully interpreted",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "task_generation": {
+                            "summary": "Task Generation Response",
+                            "value": {
+                                "intent": "generation",
+                                "answer": "I'll create these tasks for your project.",
+                                "existing_tasks": [],
+                                "new_tasks": [
+                                    {
+                                        "title": "Setup development environment",
+                                        "description": "Configure development tools and dependencies",
+                                        "status": "TODO",
+                                    }
+                                ],
+                            },
+                        },
+                        "question_answering": {
+                            "summary": "Question Answering Response",
+                            "value": {
+                                "intent": "answering",
+                                "answer": "Based on your project, here are the relevant tasks.",
+                                "existing_tasks": [
+                                    {
+                                        "id": "123",
+                                        "title": "Backend API development",
+                                        "description": "Implement REST API endpoints",
+                                        "status": "IN_PROGRESS",
+                                    }
+                                ],
+                                "new_tasks": [],
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        400: {"description": "Invalid request format or missing required fields"},
+        500: {"description": "Internal server error during AI processing"},
+    },
+)
 def interpret(request: PromptRequest):
+    """
+    Interpret a natural language prompt and provide intelligent responses.
 
-    # Time the classification
+    This endpoint uses AI to classify the intent of the prompt and:
+    - For 'generation' intent: Creates new tasks based on the prompt
+    - For 'answering' intent: Provides answers based on existing project tasks
+
+    Args:
+        request: PromptRequest containing project_id, optional user_id, and the prompt text
+
+    Returns:
+        GenAIResponse with the interpreted intent, answer, and relevant tasks
+    """
+
     with metrics.classification_time_histogram.time():
         classification = classify_prompt(request.prompt)
 
