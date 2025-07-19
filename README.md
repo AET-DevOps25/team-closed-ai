@@ -78,15 +78,16 @@ cp genai/.env.example genai/.env
 docker-compose up
 ```
 
-Access at http://localhost:5173
+Access at http://localhost
 
 This setup includes:
 
-- Client app at port 5173
+- Client application
 - Server APIs at various endpoints (users, projects, tasks)
 - PostgreSQL database
 - Ollama LLM server
 - GenAI service with vector database support
+- Monitoring and Observability with Grafana and Prometheus
 
 ### API Documentation 📖
 
