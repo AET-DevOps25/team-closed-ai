@@ -2,8 +2,6 @@
 
 This project is part of the DevOps course at TUM. A collaborative team effort integrating server, client, and AI components with DevOps best practices.
 
-> 📚 For detailed documentation, see our [Problem Statement](docs/problem-statement.md), [System Overview](docs/system-overview.md), and [GenAI Documentation](docs/genai.md)
-
 # 📋 Project Management Application
 
 Our application helps teams organize projects with an intuitive kanban interface ✨ and AI-powered chat assistant 🤖. The system can analyze project context to suggest new tasks or answer questions, making project management simpler for everyone from experienced managers to students.
@@ -95,7 +93,7 @@ This setup includes:
 Interactive Swagger UI documentation is available for all services:
 
 - **User Service**: http://localhost:8082/swagger-ui/index.html - User management and authentication
-- **Task Service**: http://localhost:8081/swagger-ui/index.html - Task CRUD operations and status management  
+- **Task Service**: http://localhost:8081/swagger-ui/index.html - Task CRUD operations and status management
 - **Project Service**: http://localhost:8083/swagger-ui/index.html - Project management and task assignment
 - **GenAI Service**: http://localhost:8084/docs - AI-powered task generation and question answering
 
@@ -146,9 +144,16 @@ The project uses GitHub Actions for:
 
 ## Monitoring 📊
 
-- [Grafana](https://closed-ai.student.k8s.aet.cit.tum.de/grafana)
+> 📚 For detailed monitoring setup and configuration, see our [Monitoring Guide](monitoring/README.md)
 
-TODO @Simon: Add short introduction of grafana and prometheus
+The project includes monitoring with **Prometheus** for metrics collection and **Grafana** for visualization:
+
+- **Grafana**: [Dashboard](https://closed-ai.student.k8s.aet.cit.tum.de/grafana) (admin/admin)
+  - Business Overview: Application metrics, user/project/task statistics
+  - Kubernetes Overview: Cluster monitoring
+- **Prometheus**: Metrics scraping and storage
+
+Dashboards are automatically provisioned from the `monitoring/dashboards/` directory.
 
 ## Team Members 👨‍💻
 
