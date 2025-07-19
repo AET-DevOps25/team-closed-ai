@@ -90,11 +90,16 @@ This setup includes:
 - Ollama LLM server
 - GenAI service with vector database support
 
-### API Docs 📚
+### API Documentation 📖
 
-- **GenAI Service**: http://localhost:8084/docs
-- **Traefik Dashboard**: http://localhost:8080
-- **OpenAPI Specs**: [Server](server/openapi.yaml) | [GenAI](genai/openapi.yaml)
+Interactive Swagger UI documentation is available for all services:
+
+- **User Service**: http://localhost:8082/swagger-ui/index.html - User management and authentication
+- **Task Service**: http://localhost:8081/swagger-ui/index.html - Task CRUD operations and status management  
+- **Project Service**: http://localhost:8083/swagger-ui/index.html - Project management and task assignment
+- **GenAI Service**: http://localhost:8084/docs - AI-powered task generation and question answering
+
+> 💡 All services must be running via `docker compose up` to access the documentation.
 
 ### Tests ✅
 
