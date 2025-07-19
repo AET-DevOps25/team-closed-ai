@@ -40,5 +40,14 @@ spec:
                 port:
                   number: {{ .Values.grafana.port }}
           {{ end -}}
+          {{ if .Values.prometheus.enabled -}}
+          - path: /prometheus
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-server
+                port:
+                  number: {{ .Values.prometheus.port }}
+          {{ end -}}
 
 {{- end -}}
