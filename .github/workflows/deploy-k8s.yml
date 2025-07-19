@@ -12,6 +12,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: k8s
+      url: https://closed-ai.student.k8s.aet.cit.tum.de
     # Only run if the build workflow succeeded (when triggered by workflow_run)
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:

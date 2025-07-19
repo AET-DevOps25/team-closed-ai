@@ -294,6 +294,8 @@ celerybeat.pid
 .env
 .env.*
 !.env*example*
+!.env.test
+!.env.aws
 
 .venv
 env/
@@ -383,4 +385,13 @@ sketch
 # Recommended template: Node.gitignore
 
 serverdb
+
 helm/*/charts
+
+# Terraform files
+*.tfstate
+*.tfstate.backup
+*.tfplan
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+.terraform/

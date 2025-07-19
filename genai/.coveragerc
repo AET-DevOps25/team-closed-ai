@@ -1,0 +1,15 @@
+[run]
+source = app
+omit = 
+    */tests/*
+    */venv/*
+    */env/*
+    */__pycache__/*
+    */openapi_client/*
+
+[report]
+skip_empty = true
+fail_under = 70
+
+[html]
+directory = htmlcov
