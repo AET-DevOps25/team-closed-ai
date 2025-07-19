@@ -31,4 +31,14 @@ spec:
                   number: {{ $config.port }}
         {{- end }}
         {{- end }}
+          {{ if .Values.grafana.enabled -}}
+          - path: /grafana
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Release.Name }}-grafana
+                port:
+                  number: {{ .Values.grafana.port }}
+          {{ end -}}
+
 {{- end -}}
