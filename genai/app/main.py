@@ -33,7 +33,7 @@ def get_metrics():
 
 @app.post("/interpret", response_model=GenAIResponse)
 def interpret(request: PromptRequest):
-    
+
     # Time the classification
     with metrics.classification_time_histogram.time():
         classification = classify_prompt(request.prompt)
@@ -44,9 +44,9 @@ def interpret(request: PromptRequest):
         # Time the generation and increment counter
         with metrics.generation_time_histogram.time():
             answer, tasks = generate_answer_and_tasks(request)
-        
+
         metrics.generation_tasks_counter.inc()
-        
+
         return GenAIResponse(
             intent=classification.intent,
             answer=answer,
@@ -54,12 +54,12 @@ def interpret(request: PromptRequest):
             new_tasks=tasks,
         )
     else:
-        # Time the answering and increment counter  
+        # Time the answering and increment counter
         with metrics.answering_time_histogram.time():
             answer, tasks = answer_and_reference(request)
-        
+
         metrics.answering_tasks_counter.inc()
-        
+
         return GenAIResponse(
             intent=classification.intent,
             answer=answer,
