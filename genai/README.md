@@ -45,11 +45,12 @@ curl http://localhost:8084/interpret -X POST \
 
 ### 🧠 Interpret Workflow
 
-![GenAI Workflow](./diagrams/GenAI%20activity%20diagram.png)
+![GenAI Interpret Workflow](./diagrams/GenAI_Activity_Diagram.png)
 
 ---
 
 ### 📄 Generating OpenAPI YAML
+
 To generate the openapi.yaml file from the running GenAI service, run the following command in the genai directory:
 
 ```bash

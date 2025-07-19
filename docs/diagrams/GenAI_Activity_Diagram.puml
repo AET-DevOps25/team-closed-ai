@@ -1,4 +1,4 @@
-@startuml /interpret Endpoint Activity Diagram
+@startuml GenAI_Activity_Diagram
 
 skinparam monochrome false
 skinparam defaultTextAlignment center
