@@ -25,5 +25,4 @@ Simply add any `.json` dashboard file to the `monitoring/dashboards/` directory:
 ## 🎯 Access Points
 - **Grafana**: `http://localhost/grafana` (admin/admin)
 - **Prometheus**: `http://localhost/prometheus`
-  (For K8S replace localhost with the corresponding hostname)
-- 
+- (For K8S replace localhost with the corresponding hostname)
