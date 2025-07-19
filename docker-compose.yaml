@@ -138,6 +138,8 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
+      - '--web.external-url=http://localhost/prometheus/'
+      - '--web.route-prefix=/prometheus'
     depends_on:
       - project-service
       - task-service
@@ -146,8 +148,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus`)"
-      - "traefik.http.routers.prometheus.middlewares=prometheus-stripprefix"
-      - "traefik.http.middlewares.prometheus-stripprefix.stripprefix.prefixes=/prometheus"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   grafana:
