@@ -92,11 +92,6 @@ This setup includes:
 
 ### API Docs 📚
 
-- **Server Services**: Each service has its own Swagger documentation:
-  TODO: Implement Swagger for each service
-  - User Service: http://localhost/users/swagger-ui.html
-  - Project Service: http://localhost/projects/swagger-ui.html
-  - Task Service: http://localhost/tasks/swagger-ui.html
 - **GenAI Service**: http://localhost:8084/docs
 - **Traefik Dashboard**: http://localhost:8080
 - **OpenAPI Specs**: [Server](server/openapi.yaml) | [GenAI](genai/openapi.yaml)
