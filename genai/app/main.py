@@ -46,7 +46,7 @@ def health():
     return {"status": "ok"}
 
 
-  @app.get("/metrics")
+@app.get("/metrics")
 def get_metrics():
     """Prometheus metrics endpoint"""
     data = generate_latest()
