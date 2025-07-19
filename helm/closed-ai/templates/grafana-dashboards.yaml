@@ -1,0 +1,14 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-dashboards
+  namespace: {{ .Values.namespace }}
+  labels:
+    grafana_dashboard: "true"
+data:
+  kubernetes-overview.json: |-
+{{ .Files.Get "dashboards/kubernetes-overview.json" | indent 4 }}
+  business-overview.json: |-
+{{ .Files.Get "dashboards/business-overview.json" | indent 4 }}
+{{- end }} 

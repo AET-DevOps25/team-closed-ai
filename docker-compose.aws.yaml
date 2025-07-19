@@ -31,6 +31,8 @@ services:
 
   project-service:
     image: ghcr.io/aet-devops25/team-closed-ai/project-service:latest
+    ports:
+      - "8083:8083"
     depends_on:
       - postgres
     labels:
@@ -48,6 +50,8 @@ services:
 
   user-service:
     image: ghcr.io/aet-devops25/team-closed-ai/user-service:latest
+    ports:
+      - "8082:8082"
     depends_on:
       - postgres
     labels:
@@ -65,6 +69,8 @@ services:
 
   task-service:
     image: ghcr.io/aet-devops25/team-closed-ai/task-service:latest
+    ports:
+      - "8081:8081"
     depends_on:
       - postgres
     labels:
@@ -91,6 +97,8 @@ services:
 
   genai:
     image: ghcr.io/aet-devops25/team-closed-ai/genai-service:latest
+    ports:
+      - "8084:8084"
     env_file:
       - ./genai/.env
     depends_on:
@@ -133,6 +141,56 @@ services:
     networks:
       - traefik-net
 
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - project-service
+      - task-service
+      - user-service
+      - genai
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+    networks:
+      - traefik-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: closed-ai-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD_AWS}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    networks:
+      - traefik-net
+
 volumes:
   postgres_data:
   ollama_data:
+  prometheus_data:
+  grafana_data:

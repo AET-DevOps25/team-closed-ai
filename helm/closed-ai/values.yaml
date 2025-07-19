@@ -82,3 +82,75 @@ pgvector:
   persistence:
     enabled: true
     size: 2Gi
+
+# Monitoring configuration
+prometheus:
+  enabled: true
+  image:
+    repository: prom/prometheus
+    tag: v3.5.0
+  port: 9090
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  persistence:
+    enabled: true
+    size: 8Gi
+  rbac:
+    create: true
+    namespaced: true  # Restrict to current namespace only
+  alertmanager:
+    enabled: true
+    port: 9093
+  config:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+
+grafana:
+  path: /grafana
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: 12.0.2
+  port: 3000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    size: 5Gi
+  auth:
+    disable_login: true
+    disable_basic_auth: true
+  anonymous:
+    enabled: true
+    org_role: Admin
+  datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server:9090
+      access: proxy
+      isDefault: true
+  dashboardProviders:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards
+        foldersFromFilesStructure: true
+  dashboards:
+    kubernetes:
+      file: dashboards/kubernetes-overview.json
