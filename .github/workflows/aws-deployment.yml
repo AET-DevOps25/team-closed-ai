@@ -49,6 +49,7 @@ jobs:
           POSTGRES_USER=${{ secrets.DB_USERNAME }}
           POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
           POSTGRES_DB=${{ secrets.DB_NAME }}
+          GF_SECURITY_ADMIN_PASSWORD_AWS=${{ secrets.GF_SECURITY_ADMIN_PASSWORD_AWS }}
           EOF
 
       - name: Configure AWS Credentials
