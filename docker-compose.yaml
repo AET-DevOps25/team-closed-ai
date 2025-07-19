@@ -3,8 +3,6 @@ services:
     build:
       context: ./client
       dockerfile: local.Dockerfile
-    ports:
-      - "5173:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
