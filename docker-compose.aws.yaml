@@ -143,6 +143,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: closed-ai-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -153,6 +154,8 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
+      - "--web.external-url=http://${VITE_API_URL}/prometheus"
+      - '--web.route-prefix=/prometheus'
     depends_on:
       - project-service
       - task-service
