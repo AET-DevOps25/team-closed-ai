@@ -51,25 +51,25 @@ data:
       scrape_interval: {{ .Values.prometheus.config.scrape_interval }}
       evaluation_interval: {{ .Values.prometheus.config.evaluation_interval }}
     scrape_configs:
-      - job_name: 'kubernetes-services'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - {{ .Values.namespace }}
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
-            action: keep
-            regex: true
-          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
-            action: replace
-            target_label: __metrics_path__
-            regex: (.+)
-          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
-            action: replace
-            regex: ([^:]+)(?::\d+)?;(\d+)
-            replacement: $1:$2
-            target_label: __address__
+      - job_name: "genai-service"
+        static_configs:
+          - targets: ["{{ $.Release.Name }}-genai-service:8084"]
+        metrics_path: "/metrics"
+
+      - job_name: "project-service"
+        static_configs:
+        - targets: ["{{ $.Release.Name }}-project-service:8083"]
+        metrics_path: "/actuator/prometheus"
+
+      - job_name: "task-service"
+        static_configs:
+          - targets: ["{{ $.Release.Name }}-task-service:8081"]
+        metrics_path: "/actuator/prometheus"
+
+      - job_name: "user-service"
+        static_configs:
+          - targets: ["{{ $.Release.Name }}-user-service:8082"]
+        metrics_path: "/actuator/prometheus"
 
 ---
 apiVersion: apps/v1
