@@ -146,6 +146,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus`)"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-stripprefix"
+      - "traefik.http.middlewares.prometheus-stripprefix.stripprefix.prefixes=/prometheus"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   grafana:
