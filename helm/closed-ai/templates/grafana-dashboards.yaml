@@ -8,7 +8,7 @@ metadata:
     grafana_dashboard: "true"
 data:
   kubernetes-overview.json: |-
-{{ .Files.Get "dashboards/kubernetes-overview.json" | indent 4 }}
+{{ .Files.Get "dashboards/jvm-performance.json" | indent 4 }}
   business-overview.json: |-
 {{ .Files.Get "dashboards/business-overview.json" | indent 4 }}
 {{- end }} 

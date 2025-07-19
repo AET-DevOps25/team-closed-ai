@@ -151,6 +151,3 @@ grafana:
       options:
         path: /var/lib/grafana/dashboards
         foldersFromFilesStructure: true
-  dashboards:
-    kubernetes:
-      file: dashboards/kubernetes-overview.json

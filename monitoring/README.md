@@ -5,7 +5,7 @@
 ### Current Dashboards
 Your setup now includes these pre-configured dashboards:
 - **Business Overview** (`business-overview.json`) - Application metrics, user/project/task statistics
-- **Kubernetes Overview** (`kubernetes-overview.json`) - Kubernetes cluster monitoring
+- **JVM Performance** (`jvm-performance.json`) - JVM Performance monitoring for Spring Boot services
 
 ### Dashboard Provisioning
 
