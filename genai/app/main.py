@@ -52,6 +52,7 @@ def get_metrics():
     data = generate_latest()
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 
+
 @app.post(
     "/interpret",
     response_model=GenAIResponse,
