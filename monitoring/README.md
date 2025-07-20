@@ -22,7 +22,9 @@ You can add new files directly there or import them from the grafana website.
 ### 🚨 Alerting
 
 Alerting is set up using Discord webhooks. Currently only alerts for GenAI usage (API requests) are set.
-The alert will fire if there are more than 20 genAI API requests in the last 24h
+The alert will fire if there are more than 20 genAI API requests in the last 24h.
+Alerting is setup automatically for the K8S and AWS deployments. For local deployment you need to set the
+Discord's webhook URL manually under `./monitoring/grafana-contact-points.yml`.
 
 ### 🎯 Access Points
 - **Grafana**: `http://localhost/grafana` (admin/admin)
