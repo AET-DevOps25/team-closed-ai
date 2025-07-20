@@ -32,7 +32,7 @@ export const useGenAiApi = (): GenAiApiHook => {
   const [health, setHealth] = useState<ApiState<string>>(createInitialApiState);
 
   const getHealth = useCallback(async () => {
-    await handleApiCall(() => genAiApi.healthHealthGet(), setHealth);
+    await handleApiCall(() => genAiApi.healthHealthzGet(), setHealth);
   }, [handleApiCall]);
 
   const createPrompt = useCallback(

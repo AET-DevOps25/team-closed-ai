@@ -102,6 +102,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
+      - "traefik.http.middlewares.genai-strip.stripprefix.prefixes=/genai"
+      - "traefik.http.routers.genai.middlewares=genai-strip@docker"
       - "traefik.http.services.genai.loadbalancer.server.port=8084"
     restart: unless-stopped
   

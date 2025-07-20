@@ -19,7 +19,6 @@ logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="GenAI Kanban Assistant",
-    root_path="/genai",
     description="AI-powered service for intelligent Kanban task management and question answering",
     tags_metadata=[
         {"name": "Health", "description": "Health check and service status operations"},
@@ -33,6 +32,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost",
         "http://localhost:5173",
         "https://closed-ai.student.k8s.aet.cit.tum.de",
     ],
