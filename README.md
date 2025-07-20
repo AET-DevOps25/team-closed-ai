@@ -74,6 +74,9 @@ git clone https://github.com/AET-DevOps25/team-closed-ai.git && cd team-closed-a
 cp genai/.env.example genai/.env
 # Edit the .env file to add your API keys
 
+# (Optional: Set up Discord Alerting Webhook)
+# Replace DISCORD_WEBHOOK_URL with the actual URL in ./monitoring/grafana-contact-points.yml
+
 # 3. Launch all services
 docker-compose up
 ```
