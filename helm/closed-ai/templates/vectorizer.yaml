@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ $.Release.Name }}-vectorizer
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
         - name: vectorizer
           image: "{{ $.Values.vectorizer.image.repository }}:{{ $.Values.vectorizer.image.tag }}"

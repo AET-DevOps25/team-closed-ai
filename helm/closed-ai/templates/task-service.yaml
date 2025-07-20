@@ -16,6 +16,8 @@ spec:
       annotations:
         redeployAt: "{{ now | unixEpoch }}"
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: task-service
           image: "{{ $.Values.services.task.image.repository }}:{{ $.Values.services.task.image.tag }}"

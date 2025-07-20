@@ -86,7 +86,8 @@ spec:
         runAsNonRoot: true
         runAsGroup: 472
         fsGroupChangePolicy: "OnRootMismatch"
-
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
       - name: {{ $.Release.Name }}-grafana
         image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"

@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ .Release.Name }}-ollama
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
         - name: ollama
           image: "{{ .Values.ollama.image.repository }}:{{ .Values.ollama.image.tag }}"
