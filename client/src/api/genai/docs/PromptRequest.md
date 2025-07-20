@@ -1,13 +1,14 @@
 # PromptRequest
 
+Request model for AI prompt interpretation
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**project_id** | **string** |  | [default to undefined]
+**project_id** | **string** | The unique identifier of the project context for the prompt | [default to undefined]
 **user_id** | **string** |  | [optional] [default to undefined]
-**prompt** | **string** |  | [default to undefined]
+**prompt** | **string** | The natural language prompt to be interpreted by the AI | [default to undefined]
 
 ## Example
 

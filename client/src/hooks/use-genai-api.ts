@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import {
-  GenAIApi,
+  AIInterpretationApi,
+  HealthApi,
   Configuration,
   type PromptRequest,
   type GenAIResponse,
@@ -8,7 +9,11 @@ import {
 import { type ApiState, createInitialApiState } from "../types/api";
 import { useApi } from "./use-api";
 
-const genAiApi = new GenAIApi(
+const genAiApi = new AIInterpretationApi(
+  new Configuration({ basePath: import.meta.env.VITE_API_URL }),
+);
+
+const healthApi = new HealthApi(
   new Configuration({ basePath: import.meta.env.VITE_API_URL }),
 );
 
@@ -32,7 +37,7 @@ export const useGenAiApi = (): GenAiApiHook => {
   const [health, setHealth] = useState<ApiState<string>>(createInitialApiState);
 
   const getHealth = useCallback(async () => {
-    await handleApiCall(() => genAiApi.healthHealthGet(), setHealth);
+    await handleApiCall(() => healthApi.healthHealthzGet(), setHealth);
   }, [handleApiCall]);
 
   const createPrompt = useCallback(

@@ -5,7 +5,6 @@ import sys
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import Response
-from fastapi.middleware.cors import CORSMiddleware
 from models.base import PromptRequest, GenAIResponse
 from chain.classification import classify_prompt
 from models.intent import IntentType
@@ -30,16 +29,16 @@ app = FastAPI(
     ],
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://closed-ai.student.k8s.aet.cit.tum.de",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[
+#         "http://localhost",
+#         "https://closed-ai.student.k8s.aet.cit.tum.de",
+#     ],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 
 @app.get(
@@ -69,16 +68,14 @@ def health():
             "description": "Prometheus metrics in text format",
             "content": {
                 "text/plain": {
-                    "example": "# HELP classification_time_seconds Time spent on prompt classification\n# TYPE classification_time_seconds histogram\nclassification_time_seconds_bucket{le=\"0.1\"} 0.0\n..."
+                    "example": '# HELP classification_time_seconds Time spent on prompt classification\n# TYPE classification_time_seconds histogram\nclassification_time_seconds_bucket{le="0.1"} 0.0\n...'
                 }
             },
         }
     },
 )
 def get_metrics():
-    """
-    Prometheus metrics endpoint for monitoring service performance.
-    """
+    """Prometheus metrics endpoint"""
     data = generate_latest()
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 

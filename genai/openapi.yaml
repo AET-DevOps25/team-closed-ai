@@ -1,28 +1,49 @@
 openapi: 3.1.0
 info:
   title: GenAI Kanban Assistant
+  description: AI-powered service for intelligent Kanban task management and question answering
   version: 0.1.0
-servers:
-  - url: http://localhost:80
-tags:
-  - name: GenAI
-
 paths:
-  /genai/health:
+  /healthz:
     get:
-      tags: [GenAI]
-      summary: Health
-      operationId: health_health_get
+      tags:
+        - Health
+      summary: Health Check
+      description: Returns the health status of the GenAI service
+      operationId: health_healthz_get
       responses:
         "200":
-          description: Successful Response
+          description: Service is healthy
           content:
             application/json:
               schema: {}
-  /genai/interpret:
+              example:
+                status: ok
+  /metrics:
+    get:
+      tags:
+        - Health
+      summary: Prometheus Metrics
+      description: Returns Prometheus metrics for monitoring the GenAI service performance and usage
+      operationId: get_metrics_metrics_get
+      responses:
+        "200":
+          description: Prometheus metrics in text format
+          content:
+            application/json:
+              schema: {}
+            text/plain:
+              example: |-
+                # HELP classification_time_seconds Time spent on prompt classification
+                # TYPE classification_time_seconds histogram
+                classification_time_seconds_bucket{le="0.1"} 0.0
+                ...
+  /interpret:
     post:
-      tags: [GenAI]
-      summary: Interpret
+      tags:
+        - AI Interpretation
+      summary: Interpret AI Prompt
+      description: Processes a natural language prompt to either generate new tasks or answer questions about existing tasks
       operationId: interpret_interpret_post
       requestBody:
         content:
@@ -32,11 +53,37 @@ paths:
         required: true
       responses:
         "200":
-          description: Successful Response
+          description: Prompt successfully interpreted
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenAIResponse"
+              examples:
+                task_generation:
+                  summary: Task Generation Response
+                  value:
+                    intent: generation
+                    answer: I'll create these tasks for your project.
+                    existing_tasks: []
+                    new_tasks:
+                      - title: Setup development environment
+                        description: Configure development tools and dependencies
+                        status: TODO
+                question_answering:
+                  summary: Question Answering Response
+                  value:
+                    intent: answering
+                    answer: Based on your project, here are the relevant tasks.
+                    existing_tasks:
+                      - id: "123"
+                        title: Backend API development
+                        description: Implement REST API endpoints
+                        status: IN_PROGRESS
+                    new_tasks: []
+        "400":
+          description: Invalid request format or missing required fields
+        "500":
+          description: Internal server error during AI processing
         "422":
           description: Validation Error
           content:
@@ -73,26 +120,33 @@ components:
         intent:
           type: string
           title: Intent
+          description: The classified intent of the prompt (generation or answering)
+          example: generation
         answer:
           type: string
           title: Answer
+          description: Human-readable response from the AI explaining the interpretation
+          example: I'll create these development tasks for your React TypeScript project.
         existing_tasks:
           items:
             $ref: "#/components/schemas/TaskDto"
           type: array
           title: Existing Tasks
+          description: List of existing tasks relevant to the prompt (used for answering intent)
           default: []
         new_tasks:
           items:
             $ref: "#/components/schemas/AddTaskDto"
           type: array
           title: New Tasks
+          description: List of new tasks generated based on the prompt (used for generation intent)
           default: []
       type: object
       required:
         - intent
         - answer
       title: GenAIResponse
+      description: Response model containing AI interpretation results
     HTTPValidationError:
       properties:
         detail:
@@ -107,19 +161,26 @@ components:
         project_id:
           type: string
           title: Project Id
+          description: The unique identifier of the project context for the prompt
+          example: proj_123456
         user_id:
           anyOf:
             - type: string
             - type: "null"
           title: User Id
+          description: Optional user identifier for personalized responses
+          example: user_789
         prompt:
           type: string
           title: Prompt
+          description: The natural language prompt to be interpreted by the AI
+          example: Create tasks for setting up a new React application with TypeScript
       type: object
       required:
         - project_id
         - prompt
       title: PromptRequest
+      description: Request model for AI prompt interpretation
     TaskDto:
       properties:
         id:

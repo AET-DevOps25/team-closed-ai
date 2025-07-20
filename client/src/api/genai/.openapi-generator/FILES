@@ -4,10 +4,11 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/AIInterpretationApi.md
 docs/AddTaskDto.md
-docs/GenAIApi.md
 docs/GenAIResponse.md
 docs/HTTPValidationError.md
+docs/HealthApi.md
 docs/PromptRequest.md
 docs/TaskDto.md
 docs/TaskStatus.md
