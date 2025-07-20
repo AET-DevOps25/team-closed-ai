@@ -1,0 +1,199 @@
+networks:
+  traefik-net:
+    external: true
+
+services:
+  traefik:
+    image: traefik:v3.4.1
+    ports:
+      - "80:80"
+      - "8080:8080"
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entryPoints.web.address=:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-net
+
+  client:
+    image: ghcr.io/aet-devops25/team-closed-ai/client:latest
+    environment:
+      - VITE_API_URL=http://${VITE_API_URL:-localhost}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+      - "traefik.http.services.client.loadbalancer.server.port=3000"
+    networks:
+      - traefik-net
+
+  project-service:
+    image: ghcr.io/aet-devops25/team-closed-ai/project-service:latest
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project.rule=PathPrefix(`/projects`)"
+      - "traefik.http.services.project.loadbalancer.server.port=8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
+    networks:
+      - traefik-net
+
+  user-service:
+    image: ghcr.io/aet-devops25/team-closed-ai/user-service:latest
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=PathPrefix(`/users`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
+    networks:
+      - traefik-net
+
+  task-service:
+    image: ghcr.io/aet-devops25/team-closed-ai/task-service:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.task.rule=PathPrefix(`/tasks`)"
+      - "traefik.http.services.task.loadbalancer.server.port=8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_PROFILES_ACTIVE=shared,shared-docker
+    networks:
+      - traefik-net
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    env_file:
+      - ./postgresql.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - traefik-net
+
+  genai:
+    image: ghcr.io/aet-devops25/team-closed-ai/genai-service:latest
+    ports:
+      - "8084:8084"
+    env_file:
+      - ./genai/.env
+    depends_on:
+      - postgres
+      - ollama
+      - task-service
+      - project-service
+      - user-service
+      - vectorizer-worker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
+      - "traefik.http.middlewares.genai-strip.stripprefix.prefixes=/genai"
+      - "traefik.http.routers.genai.middlewares=genai-strip@docker"
+      - "traefik.http.services.genai.loadbalancer.server.port=8084"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+  vectorizer-worker:
+    image: timescale/pgai-vectorizer-worker:latest
+    env_file:
+      - ./genai/.env
+    depends_on:
+      - postgres
+      - ollama
+      - task-service
+      - project-service
+      - user-service
+    command: [ "--poll-interval", "5s" ]
+    networks:
+      - traefik-net
+
+  ollama:
+    image: ollama/ollama:latest
+    env_file:
+      - ./genai/.env
+    volumes:
+      - ollama_data:/ollama_data
+    networks:
+      - traefik-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: closed-ai-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+      - "--web.external-url=http://${VITE_API_URL}/prometheus"
+      - '--web.route-prefix=/prometheus'
+    depends_on:
+      - project-service
+      - task-service
+      - user-service
+      - genai
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+    networks:
+      - traefik-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: closed-ai-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD_AWS}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    networks:
+      - traefik-net
+
+volumes:
+  postgres_data:
+  ollama_data:
+  prometheus_data:
+  grafana_data:

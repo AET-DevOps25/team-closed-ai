@@ -1,0 +1,136 @@
+{{- if .Values.grafana.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-datasources
+  namespace: {{ .Values.namespace }}
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    {{- range .Values.grafana.datasources }}
+    - name: {{ .name }}
+      type: {{ .type }}
+      url: {{ .url }}
+      access: {{ .access }}
+      isDefault: {{ .isDefault }}
+    {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-dashboards-providers
+  namespace: {{ .Values.namespace }}
+data:
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    {{- toYaml .Values.grafana.dashboardProviders | nindent 4 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-grafana
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+        runAsNonRoot: true
+        runAsGroup: 472
+        fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+      - name: {{ $.Release.Name }}-grafana
+        image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.grafana.port }}
+        resources:
+          {{- toYaml .Values.grafana.resources | nindent 12 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+        - name: storage
+          mountPath: /var/lib/grafana
+        - name: datasources
+          mountPath: /etc/grafana/provisioning/datasources
+        - name: dashboards-providers
+          mountPath: /etc/grafana/provisioning/dashboards
+        - name: dashboards
+          mountPath: /var/lib/grafana/dashboards
+        env:
+        - name: GF_AUTH_DISABLE_LOGIN_FORM
+          value: "true"
+        - name: GF_AUTH_DISABLE_SIGNOUT_MENU
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: "Admin"
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_SERVER_ROOT_URL
+          value: "%(protocol)s://%(domain)s{{ .Values.grafana.path }}"
+        - name: GF_SERVER_SERVE_FROM_SUB_PATH
+          value: "true"
+      volumes:
+      - name: storage
+        {{- if .Values.grafana.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ $.Release.Name }}-grafana-storage
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: datasources
+        configMap:
+          name: {{ $.Release.Name }}-grafana-datasources
+      - name: dashboards-providers
+        configMap:
+          name: {{ $.Release.Name }}-grafana-dashboards-providers
+      - name: dashboards
+        configMap:
+          name: {{ $.Release.Name }}-grafana-dashboards
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-grafana
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: grafana
+  ports:
+  - port: {{ .Values.grafana.port }}
+    targetPort: {{ .Values.grafana.port }}
+
+{{- if .Values.grafana.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $.Release.Name }}-grafana-storage
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.grafana.persistence.size }}
+  volumeMode: Filesystem
+{{- end }}
+{{- end }} 

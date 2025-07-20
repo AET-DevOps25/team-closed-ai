@@ -77,8 +77,20 @@ def build_context(project_id: str, user_id: Optional[str], prompt: str) -> str:
     """
     query_embeddings = Vector(embedder.embed_query(prompt))
 
-    project_chunks = _build_project_context(project_id, query_embeddings, 2)
-    task_chunks = _build_task_context(project_id, query_embeddings, 6)
+    project_chunks = []
+    task_chunks = []
+
+    try:
+        project_chunks = _build_project_context(project_id, query_embeddings, 2)
+    except Exception as e:
+        print(f"Error building project context: {e}")
+        project_chunks = ["No project information available"]
+
+    try:
+        task_chunks = _build_task_context(project_id, query_embeddings, 6)
+    except Exception as e:
+        print(f"Error building task context: {e}")
+        task_chunks = ["No task information available"]
 
     header = f"ProjectID: {project_id}"
     if user_id:

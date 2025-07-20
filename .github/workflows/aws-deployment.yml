@@ -1,0 +1,114 @@
+name: Deploy to AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+      AWS_ACCESS_KEY_ID:
+        description: "AWS Access Key ID"
+        required: true
+        type: string
+      AWS_SECRET_ACCESS_KEY:
+        description: "AWS Secret Access Key"
+        required: true
+        type: string
+      AWS_SESSION_TOKEN:
+        description: "AWS Session Token"
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    environment:
+      name: aws
+      url: ${{ steps.extract_ip.outputs.url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Mask AWS inputs
+        run: |
+          AWS_ID=$(jq -r '.inputs.AWS_ACCESS_KEY_ID' < "$GITHUB_EVENT_PATH")
+          AWS_SECRET=$(jq -r '.inputs.AWS_SECRET_ACCESS_KEY' < "$GITHUB_EVENT_PATH")
+          AWS_TOKEN=$(jq -r '.inputs.AWS_SESSION_TOKEN' < "$GITHUB_EVENT_PATH")
+
+          echo "::add-mask::$AWS_ID"
+          echo "::add-mask::$AWS_SECRET"
+          echo "::add-mask::$AWS_TOKEN"
+
+          echo "AWS_ACCESS_KEY_ID=$AWS_ID" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=$AWS_TOKEN" >> $GITHUB_ENV
+
+      - name: Create .env file with secrets for Compose
+        working-directory: .
+        run: |
+          cat <<EOF > postgresql.env
+          POSTGRES_USER=${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB=${{ secrets.DB_NAME }}
+          GF_SECURITY_ADMIN_PASSWORD_AWS=${{ secrets.GF_SECURITY_ADMIN_PASSWORD_AWS }}
+          EOF
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Build .env by merging secrets and constants
+        working-directory: ./genai
+        run: |
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "OLLAMA_LLM_KEY=${{ secrets.OLLAMA_LLM_KEY }}" >> .env
+          cat .env.aws >> .env
+
+      - name: Copy Private Deployer Key
+        run: |
+          mkdir -p $HOME/.ssh
+          echo "${{ secrets.CLOSEDAI_DEPLOYER_PRIVATE_KEY }}" > $HOME/.ssh/closedai-deployer
+          chmod 600 $HOME/.ssh/closedai-deployer
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+
+      - name: Get IP
+        id: extract_ip
+        working-directory: ./terraform
+        run: |
+          IP=$(terraform output -raw elastic_ip | grep -oP '\d+\.\d+\.\d+\.\d+' | head -n1)
+          echo "ELASTIC_IP=$IP" >> $GITHUB_ENV
+          echo "url=http://$IP" >> $GITHUB_OUTPUT
+
+      - name: Run Ansible
+        id: ansible
+        continue-on-error: true
+        working-directory: ./ansible
+        env:
+          ELASTIC_IP: ${{ env.ELASTIC_IP }}
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ansible-playbook -i inventory.yml playbook.yml \
+            --ssh-extra-args='-o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=30 -o ServerAliveCountMax=3' \
+            --extra-vars "elastic_ip=${ELASTIC_IP}"
+
+      - name: Terraform destroy on Ansible failure
+        if: ${{ steps.ansible.outcome == 'failure' }}
+        working-directory: ./terraform
+        run: |
+          terraform destroy -auto-approve
+          exit 1

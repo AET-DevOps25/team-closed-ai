@@ -27,7 +27,7 @@ const ChatBot = ({ isOpen, onClose, projectId, user }: ChatBotProps) => {
       const lastChild = viewport.lastElementChild;
 
       if (lastChild) {
-        lastChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        lastChild.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   };
