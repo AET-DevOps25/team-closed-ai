@@ -112,6 +112,13 @@ cd client && npm test
 cd genai && python -m pytest
 ```
 
+```bash
+# Run tests with coverage verification
+cd server && ./gradlew test jacocoTestCoverageVerification
+cd client && npm run test:coverage
+cd genai && python -m pytest
+```
+
 ## Deployment 🚢
 
 ### AWS Deployment ☁️
