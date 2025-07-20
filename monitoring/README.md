@@ -22,6 +22,7 @@ You can add new files directly there or import them from the grafana website.
 ### 🚨 Alerting
 
 Alerting is set up using Discord webhooks. Currently only alerts for GenAI usage (API requests) are set.
+The alert will fire if there are more than 20 genAI API requests in the last 24h
 
 ### 🎯 Access Points
 - **Grafana**: `http://localhost/grafana` (admin/admin)

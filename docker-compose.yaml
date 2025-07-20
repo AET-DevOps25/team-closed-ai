@@ -160,6 +160,7 @@ services:
       - ./monitoring/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./monitoring/grafana-contact-points.yml:/etc/grafana/provisioning/alerting/contactpoints.yml
+      - ./monitoring/grafana-alert-rules.yml:/etc/grafana/provisioning/alerting/rules.yml
       - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin

@@ -40,7 +40,28 @@ data:
     apiVersion: 1
     {{- if .Values.grafana.alerting.contactPoints }}
     contactPoints:
-    {{- toYaml .Values.grafana.alerting.contactPoints | nindent 4 }}
+      - orgId: 1
+        name: Closed AI Discord k8s
+        receivers:
+        - uid: deshrgx5qgow0f
+          type: discord
+          settings:
+            url: {{ .Values.grafana.alerting.contactPoints.webhookUrl }}
+            use_discord_username: true
+          disableResolveMessage: false
+    {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-alert-rules
+  namespace: {{ .Values.namespace }}
+data:
+  rules.yaml: |
+    apiVersion: 1
+    {{- if .Values.grafana.alerting.alertRules }}
+    {{ toYaml .Values.grafana.alerting.alertRules | nindent 4 }}
     {{- end }}
 
 ---
@@ -85,7 +106,9 @@ spec:
         - name: dashboards-providers
           mountPath: /etc/grafana/provisioning/dashboards
         - name: contact-points
-          mountPath: /etc/grafana/provisioning/alerting
+          mountPath: /etc/grafana/provisioning/alerting/contactpoints
+        - name: alert-rules
+          mountPath: /etc/grafana/provisioning/alerting/rules
         - name: dashboards
           mountPath: /var/lib/grafana/dashboards
         env:
@@ -120,6 +143,9 @@ spec:
       - name: contact-points
         configMap:
           name: {{ $.Release.Name }}-grafana-contact-points
+      - name: alert-rules
+        configMap:
+          name: {{ $.Release.Name }}-grafana-alert-rules
       - name: dashboards
         configMap:
           name: {{ $.Release.Name }}-grafana-dashboards

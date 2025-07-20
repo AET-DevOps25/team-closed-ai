@@ -153,13 +153,72 @@ grafana:
         foldersFromFilesStructure: true
   alerting:
     contactPoints:
+      webhookUrl: 'SET WEBHOOK URL HERE'
+    alertRules:
+      groups:
         - orgId: 1
-          name: Closed AI Discord k8s
-          receivers:
-            - uid: deshrgx5qgow0f
-              type: discord
-              settings:
-                url: https://discord.com/api/webhooks/1396438308367892570/4EwjZ4DbTPfLM9bH6MTb96nf5GmTFITQsIVL6XZJ1JSRtmtjlr17ClTBHTdxbUDbtdAy
-                use_discord_username: true
-              disableResolveMessage: false
+          name: GenAI Usage
+          folder: GenAI
+          interval: 1m
+          rules:
+            - uid: ceshspmbrclq8a
+              title: Total GenAI Requests
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 3600
+                    to: 0
+                  datasourceUid: prometheus
+                  model:
+                    adhocFilters: []
+                    datasource:
+                      type: prometheus
+                      uid: prometheus
+                    editorMode: code
+                    expr: sum(increase(genai_answering_tasks_total[24h])) + sum(increase(genai_generation_tasks_total[24h]))
+                    instant: true
+                    interval: ""
+                    intervalMs: 15000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                      - evaluator:
+                          params:
+                            - 20
+                          type: gt
+                        operator:
+                          type: and
+                        query:
+                          params:
+                            - C
+                        reducer:
+                          params: []
+                          type: last
+                        type: query
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              dashboardUid: 84e033ec-d6c2-48a9-ae26-d336dd6c7053
+              panelId: 15
+              noDataState: NoData
+              execErrState: Error
+              annotations:
+                __dashboardUid__: 84e033ec-d6c2-48a9-ae26-d336dd6c7053
+                __panelId__: "15"
+                description: Gen AI Usage has surpassed 20 requests in Total in the last 24 hours, make sure this is within limits defined.
+                summary: Gen AI Usage has surpassed 20 requests in Total.
+              isPaused: false
+              notification_settings:
+                receiver: Closed AI Discord k8s
 
