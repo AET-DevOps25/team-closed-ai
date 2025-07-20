@@ -143,6 +143,13 @@ You can also run the [GitHub Action](https://github.com/AET-DevOps25/team-closed
 
 For Kubernetes deployment we use Helm charts. You can access our application deployed on Rancher here: https://closed-ai.student.k8s.aet.cit.tum.de
 
+If you want to deploy our chart in another namespace or cluster you have to manually create two secrets to be able to pull the docker images.
+
+`ghcr-secret`: ghcr.io username and token for pulling the project's own images.
+`dockerhub-secret`: Dockerhub username and password for pulling the projects' dependencies' images.
+
+These secrets are needed if the anonymous image pull-limit is exceeded, otherwise you can just remove these references from the template files under `.helm/closed-ai/templates`.
+
 ### CI/CD Pipeline 🔄
 
 The project uses GitHub Actions for:
