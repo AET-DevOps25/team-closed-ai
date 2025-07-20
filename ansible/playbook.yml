@@ -58,6 +58,20 @@
         group: ubuntu
         mode: "0644"
 
+    - name: Copy Monitoring Configs
+      ansible.builtin.copy:
+        src: ../monitoring/
+        dest: /home/ubuntu/monitoring
+        owner: ubuntu
+        group: ubuntu
+        mode: "0644"
+
+    - name: Set Webhook URL
+      ansible.builtin.replace:
+        path: /home/ubuntu/monitoring/grafana-contact-points.yml
+        regexp: 'DISCORD_WEBHOOK_URL'
+        replace: "{{ discord_webhook_url }}"
+
     - name: Copy Postgres env file
       copy:
         src: ../postgresql.env
