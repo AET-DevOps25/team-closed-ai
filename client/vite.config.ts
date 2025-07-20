@@ -21,10 +21,16 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       exclude: [
         "src/api/**",
+        "src/components/ui/**",
+        "src/types/**",
+        "src/vite-env.d.ts",
         "node_modules/**",
         "dist/**",
         "**/*.test.{ts,tsx}",
         "**/*.spec.{ts,tsx}",
+        "**/*.config.{js,ts}",
+        "**/eslint.config.js",
+        "**/vite.config.ts",
       ],
       thresholds: {
         lines: 70,
