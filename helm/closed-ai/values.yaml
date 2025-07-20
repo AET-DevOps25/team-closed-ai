@@ -55,7 +55,7 @@ services:
       repository: ghcr.io/aet-devops25/team-closed-ai/genai-service
       tag: latest
     port: 8084
-    path: /interpret
+    path: /genai
 
 vectorizer:
   enabled: true
@@ -102,7 +102,7 @@ prometheus:
     size: 8Gi
   rbac:
     create: true
-    namespaced: true  # Restrict to current namespace only
+    namespaced: true # Restrict to current namespace only
   alertmanager:
     enabled: true
     port: 9093
@@ -140,9 +140,9 @@ grafana:
       access: proxy
       isDefault: true
   dashboardProviders:
-    - name: 'default'
+    - name: "default"
       orgId: 1
-      folder: ''
+      folder: ""
       type: file
       disableDeletion: false
       editable: true
