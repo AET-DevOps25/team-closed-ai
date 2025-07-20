@@ -1,3 +1,5 @@
+{{- if .Values.vectorizer.enabled }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -17,10 +19,14 @@ spec:
       containers:
         - name: vectorizer
           image: "{{ $.Values.vectorizer.image.repository }}:{{ $.Values.vectorizer.image.tag }}"
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           args: ["--poll-interval", "5s"]
           envFrom:
             - configMapRef:
                 name: {{ $.Release.Name }}-config
             - secretRef:
                 name: {{ $.Release.Name }}-secret
+            - secretRef:
+                name: gen-ai-secret
+
+{{- end }}

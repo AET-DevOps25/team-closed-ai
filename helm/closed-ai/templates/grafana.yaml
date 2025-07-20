@@ -108,7 +108,7 @@ spec:
         - name: contact-points
           mountPath: /etc/grafana/provisioning/alerting/contactpoints
         - name: alert-rules
-          mountPath: /etc/grafana/provisioning/alerting/rules
+          mountPath: /etc/grafana/provisioning/alerting
         - name: dashboards
           mountPath: /var/lib/grafana/dashboards
         env:
