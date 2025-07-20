@@ -143,9 +143,7 @@ The project uses GitHub Actions for:
 - Deployment to AWS
 - Deployment to Rancher
 
-## Monitoring 📊
-
-> 📚 For detailed monitoring setup and configuration, see our [Monitoring Guide](monitoring/README.md)
+## Monitoring 📊 & Alerting 🚨
 
 The project includes monitoring with **Prometheus** for metrics collection and **Grafana** for visualization:
 
@@ -155,6 +153,10 @@ The project includes monitoring with **Prometheus** for metrics collection and *
 - **Prometheus**: Metrics scraping and storage
 
 Dashboards are automatically provisioned from the `monitoring/dashboards/` directory.
+
+You can join the ClosedAI's Discord Server to get updates when alerts are fired: https://discord.gg/uxbsnNjY. 
+
+> 📚 For detailed monitoring, setup, configuration and alerting, see our [Monitoring Guide](monitoring/README.md)
 
 ## Team Members 👨‍💻
 

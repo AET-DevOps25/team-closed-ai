@@ -151,3 +151,15 @@ grafana:
       options:
         path: /var/lib/grafana/dashboards
         foldersFromFilesStructure: true
+  alerting:
+    contactPoints:
+        - orgId: 1
+          name: Closed AI Discord k8s
+          receivers:
+            - uid: deshrgx5qgow0f
+              type: discord
+              settings:
+                url: https://discord.com/api/webhooks/1396438308367892570/4EwjZ4DbTPfLM9bH6MTb96nf5GmTFITQsIVL6XZJ1JSRtmtjlr17ClTBHTdxbUDbtdAy
+                use_discord_username: true
+              disableResolveMessage: false
+

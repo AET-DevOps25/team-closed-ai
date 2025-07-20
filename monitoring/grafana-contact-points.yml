@@ -1,0 +1,12 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: ClosedAI discord
+    receivers:
+      - uid: eeshmsn3heupsc
+        type: discord
+        settings:
+          url: https://discord.com/api/webhooks/1396426278457835562/IFXu1SJxcggDyLgFcE1TXgLqHv2QoaqjLzpkx2BCuAGuJwhj56BnjEXSO9vAEDXjMA0k
+          use_discord_username: true
+        disableResolveMessage: false 
