@@ -12,8 +12,8 @@ services:
     image: traefik:v3.4.1
     container_name: traefik
     ports:
-      - "80:80"    # HTTP entrypoint
-      - "8080:8080"  # dashboard (insecure)
+      - "80:80" # HTTP entrypoint
+      - "8080:8080" # dashboard (insecure)
     command:
       - --api.insecure=true
       - --providers.docker=true
@@ -102,6 +102,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=PathPrefix(`/genai`)"
+      - "traefik.http.middlewares.genai-strip.stripprefix.prefixes=/genai"
+      - "traefik.http.routers.genai.middlewares=genai-strip@docker"
       - "traefik.http.services.genai.loadbalancer.server.port=8084"
     restart: unless-stopped
   
@@ -112,7 +114,7 @@ services:
     depends_on:
       - postgres
       - ollama
-    command: [ "--poll-interval", "5s" ]
+    command: ["--poll-interval", "5s"]
 
   ollama:
     image: ollama/ollama:latest

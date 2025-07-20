@@ -22,6 +22,7 @@ import { useBoard } from "@/context/BoardContext";
 import { useUser } from "@/context/UserContext";
 import { Loader2 } from "lucide-react";
 import type { Task, TaskStatus } from "@/types";
+import type { AddTaskDto } from "@/api/server";
 
 interface CreateTaskDialogProps {
   isOpen: boolean;
@@ -29,12 +30,12 @@ interface CreateTaskDialogProps {
 }
 
 const CreateTaskDialog = ({ isOpen, onClose }: CreateTaskDialogProps) => {
-  const { addTask } = useBoard();
+  const { addTasks } = useBoard();
   const { defaultUser, users } = useUser();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [state, setState] = useState<TaskStatus>("BACKLOG");
-  const [assigneeId, setAssigneeId] = useState<string>("");
+  const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -56,24 +57,20 @@ const CreateTaskDialog = ({ isOpen, onClose }: CreateTaskDialogProps) => {
       return;
     }
 
-    const assignee =
-      assigneeId && assigneeId !== "unassigned"
-        ? users.find((user) => user.id === parseInt(assigneeId))
-        : undefined;
+    const assignee = assigneeId
+      ? users.find((user) => user.id === parseInt(assigneeId))?.id
+      : undefined;
 
-    const TaskData: Omit<
-      Task,
-      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
-    > = {
+    const taskData: AddTaskDto = {
       title: title.trim(),
       description: description.trim(),
       taskStatus: state,
-      assignee,
+      assigneeId: assignee,
     };
 
     setIsSubmitting(true);
     try {
-      await addTask(TaskData);
+      await addTasks([taskData]);
       toast.success("Task created successfully");
       resetForm();
       onClose();
@@ -88,7 +85,7 @@ const CreateTaskDialog = ({ isOpen, onClose }: CreateTaskDialogProps) => {
     setTitle("");
     setDescription("");
     setState("BACKLOG");
-    setAssigneeId("");
+    setAssigneeId(defaultUser ? defaultUser.id.toString() : undefined);
   };
 
   const handleClose = () => {

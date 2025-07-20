@@ -4,6 +4,7 @@ import subprocess
 import sys
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from models.base import PromptRequest, GenAIResponse
 from chain.classification import classify_prompt
@@ -26,6 +27,18 @@ app = FastAPI(
             "description": "AI prompt interpretation for task generation and question answering",
         },
     ],
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:5173",
+        "https://closed-ai.student.k8s.aet.cit.tum.de",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

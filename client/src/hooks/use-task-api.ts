@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
-import { TaskApi, type TaskDto, TaskStatus } from "../api/api";
+import { TaskApi, type TaskDto, TaskStatus, Configuration } from "@/api/server";
 import { type ApiState, createInitialApiState } from "../types/api";
-import { Configuration } from "@/api/configuration";
 import { useApi } from "./use-api";
 
 const taskApi = new TaskApi(

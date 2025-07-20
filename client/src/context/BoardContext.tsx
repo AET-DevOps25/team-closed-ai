@@ -10,23 +10,20 @@ import { useTaskApi } from "@/hooks/use-task-api";
 import { useProjectApi } from "@/hooks/use-project-api";
 import { useUser } from "./UserContext";
 import { useProject } from "@/context/ProjectContext";
-import type { TaskDto } from "@/api/api";
+import type { AddTaskDto, TaskDto } from "@/api/server";
 import { mapTaskDtoToTask } from "@/utils/type-mappers";
+import ViewTaskDialog from "@/components/board/ViewTaskDialog";
 
 interface BoardContextType {
   tasks: Task[];
   loading: boolean;
   error: string | null;
-  addTask: (
-    task: Omit<
-      Task,
-      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
-    >,
-  ) => Promise<void>;
+  addTasks: (taskData: AddTaskDto[]) => Promise<void>;
   updateTask: (id: number, updates: Partial<Task>) => Promise<void>;
   moveTask: (taskId: number, newState: TaskStatus) => Promise<void>;
   getTaskById: (id: number) => Task | undefined;
   refetch: () => Promise<void>;
+  openTaskDetails: (taskId: number) => void;
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined);
@@ -40,6 +37,8 @@ export const BoardProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,24 +97,13 @@ export const BoardProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const addTask = async (
-    taskData: Omit<
-      Task,
-      "id" | "comments" | "attachments" | "createdAt" | "updatedAt"
-    >,
-  ) => {
+  const addTasks = async (taskData: AddTaskDto[]) => {
     try {
       if (!selectedProject) {
         throw new Error("No project selected");
       }
 
-      await projectApi.addTaskToProject(selectedProject.id, {
-        title: taskData.title,
-        description: taskData.description,
-        taskStatus: taskData.taskStatus,
-        assigneeId: taskData.assignee?.id,
-      });
-
+      await projectApi.addTasksToProject(selectedProject.id, taskData);
       await taskApi.getTasksByProject(selectedProject.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add task");
@@ -176,20 +164,38 @@ export const BoardProvider = ({ children }: { children: ReactNode }) => {
     return tasks.find((task) => task.id === id);
   };
 
+  const openTaskDetails = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setIsTaskDialogOpen(true);
+  };
+
+  const handleCloseTaskDialog = () => {
+    setIsTaskDialogOpen(false);
+    setSelectedTaskId(null);
+  };
+
+  const value = {
+    tasks,
+    loading,
+    error,
+    addTasks,
+    updateTask,
+    moveTask,
+    getTaskById,
+    refetch,
+    openTaskDetails,
+  };
+
   return (
-    <BoardContext.Provider
-      value={{
-        tasks,
-        loading,
-        error,
-        addTask,
-        updateTask,
-        moveTask,
-        getTaskById,
-        refetch,
-      }}
-    >
+    <BoardContext.Provider value={value}>
       {children}
+      {selectedTaskId && (
+        <ViewTaskDialog
+          isOpen={isTaskDialogOpen}
+          onClose={handleCloseTaskDialog}
+          taskId={selectedTaskId}
+        />
+      )}
     </BoardContext.Provider>
   );
 };

@@ -106,26 +106,30 @@ public class ProjectController {
 
   @PostMapping("/{id}/tasks")
   @Operation(
-      summary = "Add task to project",
-      description = "Create and assign a new task to the specified project")
+      summary = "Add tasks to project",
+      description = "Create and assign new tasks to the specified project")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Task created and assigned to project successfully"),
+            description = "Tasks created and assigned to project successfully"),
         @ApiResponse(responseCode = "404", description = "Project not found with the provided ID"),
         @ApiResponse(responseCode = "400", description = "Invalid task data provided")
       })
-  public TaskDto addTask(
+  public List<TaskDto> addTasks(
       @Parameter(description = "Unique identifier of the project", required = true) @PathVariable
           Long id,
-      @RequestBody AddTaskDto addTaskDto) {
-    return TaskDto.fromTask(
-        projectService.createTask(
-            id,
-            addTaskDto.title(),
-            addTaskDto.description(),
-            addTaskDto.taskStatus(),
-            addTaskDto.assigneeId()));
+      @RequestBody List<AddTaskDto> addTaskDtos) {
+    return addTaskDtos.stream()
+        .map(
+            addTaskDto ->
+                projectService.createTask(
+                    id,
+                    addTaskDto.title(),
+                    addTaskDto.description(),
+                    addTaskDto.taskStatus(),
+                    addTaskDto.assigneeId()))
+        .map(TaskDto::fromTask)
+        .toList();
   }
 }

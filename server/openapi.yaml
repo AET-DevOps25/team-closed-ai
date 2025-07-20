@@ -6,9 +6,9 @@ info:
 servers:
   - url: http://localhost:80
 tags:
-  - Project
-  - Task
-  - User
+  - name: Project
+  - name: Task
+  - name: User
 
 paths:
   # Project Service Endpoints
@@ -19,14 +19,14 @@ paths:
       summary: Get all projects
       operationId: getAllProjects
       responses:
-        '200':
+        "200":
           description: A list of projects
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProjectDto'
+                  $ref: "#/components/schemas/ProjectDto"
     post:
       tags:
         - Project
@@ -37,14 +37,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProjectDto'
+              $ref: "#/components/schemas/CreateProjectDto"
       responses:
-        '200':
+        "200":
           description: The created project
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectDto'
+                $ref: "#/components/schemas/ProjectDto"
 
   /projects/{id}:
     get:
@@ -60,13 +60,13 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: The project with the given ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectDto'
-        '404':
+                $ref: "#/components/schemas/ProjectDto"
+        "404":
           description: Project not found
     put:
       tags:
@@ -85,15 +85,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjectDto'
+              $ref: "#/components/schemas/ProjectDto"
       responses:
-        '200':
+        "200":
           description: The updated project
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectDto'
-        '404':
+                $ref: "#/components/schemas/ProjectDto"
+        "404":
           description: Project not found
     delete:
       tags:
@@ -108,17 +108,17 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Project deleted successfully
-        '404':
+        "404":
           description: Project not found
 
   /projects/{id}/tasks:
     post:
       tags:
         - Project
-      summary: Add a task to a project
-      operationId: addTaskToProject
+      summary: Add tasks to a project
+      operationId: addTasksToProject
       parameters:
         - name: id
           in: path
@@ -131,15 +131,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddTaskDto'
+              type: array
+              items:
+                $ref: "#/components/schemas/AddTaskDto"
       responses:
-        '200':
-          description: The created task
+        "200":
+          description: The created tasks
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDto'
-        '404':
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskDto"
+        "404":
           description: Project not found
 
   # Task Service Endpoints
@@ -150,14 +154,14 @@ paths:
       summary: Get all tasks
       operationId: getAllTasks
       responses:
-        '200':
+        "200":
           description: A list of tasks
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TaskDto'
+                  $ref: "#/components/schemas/TaskDto"
 
   /tasks/{id}:
     get:
@@ -173,13 +177,13 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: The task with the given ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDto'
-        '404':
+                $ref: "#/components/schemas/TaskDto"
+        "404":
           description: Task not found
     put:
       tags:
@@ -198,15 +202,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskDto'
+              $ref: "#/components/schemas/TaskDto"
       responses:
-        '200':
+        "200":
           description: The updated task
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDto'
-        '404':
+                $ref: "#/components/schemas/TaskDto"
+        "404":
           description: Task not found
     delete:
       tags:
@@ -221,9 +225,9 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Task deleted successfully
-        '404':
+        "404":
           description: Task not found
 
   /tasks/{id}/status:
@@ -243,15 +247,15 @@ paths:
           in: query
           required: true
           schema:
-            $ref: '#/components/schemas/TaskStatus'
+            $ref: "#/components/schemas/TaskStatus"
       responses:
-        '200':
+        "200":
           description: The updated task
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDto'
-        '404':
+                $ref: "#/components/schemas/TaskDto"
+        "404":
           description: Task not found
 
   /tasks/by-assignee/{id}:
@@ -268,15 +272,15 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: A list of tasks assigned to the user
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TaskDto'
-        '404':
+                  $ref: "#/components/schemas/TaskDto"
+        "404":
           description: User not found
 
   /tasks/by-project/{id}:
@@ -293,15 +297,15 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: A list of tasks for the project
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TaskDto'
-        '404':
+                  $ref: "#/components/schemas/TaskDto"
+        "404":
           description: Project not found
 
   # User Service Endpoints
@@ -312,14 +316,14 @@ paths:
       summary: Get all users
       operationId: getAllUsers
       responses:
-        '200':
+        "200":
           description: A list of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserDto'
+                  $ref: "#/components/schemas/UserDto"
     post:
       tags:
         - User
@@ -330,14 +334,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserDto'
+              $ref: "#/components/schemas/CreateUserDto"
       responses:
-        '200':
+        "200":
           description: The created user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
+                $ref: "#/components/schemas/UserDto"
 
   /users/{id}:
     get:
@@ -353,13 +357,13 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: The user with the given ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
-        '404':
+                $ref: "#/components/schemas/UserDto"
+        "404":
           description: User not found
     put:
       tags:
@@ -378,15 +382,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserDto'
+              $ref: "#/components/schemas/UserDto"
       responses:
-        '200':
+        "200":
           description: The updated user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
-        '404':
+                $ref: "#/components/schemas/UserDto"
+        "404":
           description: User not found
     delete:
       tags:
@@ -401,9 +405,9 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: User deleted successfully
-        '404':
+        "404":
           description: User not found
 
 components:
@@ -459,7 +463,7 @@ components:
         description:
           type: string
         taskStatus:
-          $ref: '#/components/schemas/TaskStatus'
+          $ref: "#/components/schemas/TaskStatus"
         createdAt:
           type: string
           format: date-time
@@ -496,7 +500,7 @@ components:
         description:
           type: string
         taskStatus:
-          $ref: '#/components/schemas/TaskStatus'
+          $ref: "#/components/schemas/TaskStatus"
         assigneeId:
           type: integer
           format: int64

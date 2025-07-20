@@ -2,9 +2,15 @@ openapi: 3.1.0
 info:
   title: GenAI Kanban Assistant
   version: 0.1.0
+servers:
+  - url: http://localhost:80
+tags:
+  - name: GenAI
+
 paths:
-  /healthz:
+  /genai/healthz:
     get:
+      tags: [GenAI]
       summary: Health
       operationId: health_healthz_get
       responses:
@@ -13,15 +19,16 @@ paths:
           content:
             application/json:
               schema: {}
-  /interpret:
+  /genai/interpret:
     post:
+      tags: [GenAI]
       summary: Interpret
       operationId: interpret_interpret_post
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PromptRequest'
+              $ref: "#/components/schemas/PromptRequest"
         required: true
       responses:
         "200":
@@ -29,13 +36,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenAIResponse'
+                $ref: "#/components/schemas/GenAIResponse"
         "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
 components:
   schemas:
     AddTaskDto:
@@ -48,7 +55,7 @@ components:
           title: Description
         taskStatus:
           anyOf:
-            - $ref: '#/components/schemas/TaskStatus'
+            - $ref: "#/components/schemas/TaskStatus"
             - type: "null"
         assigneeId:
           anyOf:
@@ -71,13 +78,13 @@ components:
           title: Answer
         existing_tasks:
           items:
-            $ref: '#/components/schemas/TaskDto'
+            $ref: "#/components/schemas/TaskDto"
           type: array
           title: Existing Tasks
           default: []
         new_tasks:
           items:
-            $ref: '#/components/schemas/AddTaskDto'
+            $ref: "#/components/schemas/AddTaskDto"
           type: array
           title: New Tasks
           default: []
@@ -90,7 +97,7 @@ components:
       properties:
         detail:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
           type: array
           title: Detail
       type: object
@@ -125,7 +132,7 @@ components:
           type: string
           title: Description
         taskStatus:
-          $ref: '#/components/schemas/TaskStatus'
+          $ref: "#/components/schemas/TaskStatus"
         createdAt:
           type: string
           format: date-time
