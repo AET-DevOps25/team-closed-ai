@@ -249,8 +249,8 @@ export const GenAIApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        healthHealthGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/genai/health`;
+        healthHealthzGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/genai/healthz`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -325,10 +325,10 @@ export const GenAIApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async healthHealthGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.healthHealthGet(options);
+        async healthHealthzGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.healthHealthzGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GenAIApi.healthHealthGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['GenAIApi.healthHealthzGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -360,8 +360,8 @@ export const GenAIApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        healthHealthGet(options?: RawAxiosRequestConfig): AxiosPromise<any> {
-            return localVarFp.healthHealthGet(options).then((request) => request(axios, basePath));
+        healthHealthzGet(options?: RawAxiosRequestConfig): AxiosPromise<any> {
+            return localVarFp.healthHealthzGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -390,8 +390,8 @@ export class GenAIApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GenAIApi
      */
-    public healthHealthGet(options?: RawAxiosRequestConfig) {
-        return GenAIApiFp(this.configuration).healthHealthGet(options).then((request) => request(this.axios, this.basePath));
+    public healthHealthzGet(options?: RawAxiosRequestConfig) {
+        return GenAIApiFp(this.configuration).healthHealthzGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

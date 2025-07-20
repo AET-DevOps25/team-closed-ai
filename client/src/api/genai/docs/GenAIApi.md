@@ -4,11 +4,11 @@ All URIs are relative to *http://localhost:80*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**healthHealthGet**](#healthhealthget) | **GET** /genai/health | Health|
+|[**healthHealthzGet**](#healthhealthzget) | **GET** /genai/healthz | Health|
 |[**interpretInterpretPost**](#interpretinterpretpost) | **POST** /genai/interpret | Interpret|
 
-# **healthHealthGet**
-> any healthHealthGet()
+# **healthHealthzGet**
+> any healthHealthzGet()
 
 
 ### Example
@@ -22,7 +22,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new GenAIApi(configuration);
 
-const { status, data } = await apiInstance.healthHealthGet();
+const { status, data } = await apiInstance.healthHealthzGet();
 ```
 
 ### Parameters
