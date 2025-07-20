@@ -74,6 +74,9 @@ git clone https://github.com/AET-DevOps25/team-closed-ai.git && cd team-closed-a
 cp genai/.env.example genai/.env
 # Edit the .env file to add your API keys
 
+# (Optional: Set up Discord Alerting Webhook)
+# Replace DISCORD_WEBHOOK_URL with the actual URL in ./monitoring/grafana-contact-points.yml
+
 # 3. Launch all services
 docker-compose up
 ```
@@ -150,9 +153,7 @@ The project uses GitHub Actions for:
 - Deployment to AWS
 - Deployment to Rancher
 
-## Monitoring 📊
-
-> 📚 For detailed monitoring setup and configuration, see our [Monitoring Guide](monitoring/README.md)
+## Monitoring 📊 & Alerting 🚨
 
 The project includes monitoring with **Prometheus** for metrics collection and **Grafana** for visualization:
 
@@ -162,6 +163,10 @@ The project includes monitoring with **Prometheus** for metrics collection and *
 - **Prometheus**: Metrics scraping and storage
 
 Dashboards are automatically provisioned from the `monitoring/dashboards/` directory.
+
+You can join the ClosedAI's Discord Server to get updates when alerts are fired: https://discord.gg/uxbsnNjY. 
+
+> 📚 For detailed monitoring, setup, configuration and alerting, see our [Monitoring Guide](monitoring/README.md)
 
 ## Team Members 👨‍💻
 

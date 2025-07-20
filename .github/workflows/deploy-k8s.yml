@@ -40,8 +40,10 @@ jobs:
             --set global.postgresql.auth.database=$DB_NAME \
             --set postgresql.auth.username=$DB_USERNAME \
             --set postgresql.auth.password=$DB_PASSWORD \
-            --set postgresql.auth.database=$DB_NAME
+            --set postgresql.auth.database=$DB_NAME \
+            --set grafana.alerting.contactPoints.webhookUrl=$DISCORD_WEBHOOK_K8S
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
+          DISCORD_WEBHOOK_K8S: ${{ secrets.DISCORD_WEBHOOK_K8S }}

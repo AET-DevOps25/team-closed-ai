@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
 import { useProject } from "@/context/ProjectContext";
 import { useUser } from "@/context/UserContext";
+import { toast } from "sonner";
 import ChatBot from "./ChatBot";
 
 const ChatButton = () => {
@@ -16,7 +17,13 @@ const ChatButton = () => {
     <>
       <Button
         onClick={() => {
-          if (!projectId || !defaultUser) {
+          if (!projectId) {
+            toast.error("Please select a project!");
+            return;
+          }
+
+          if (!defaultUser) {
+            toast.error("Please select a default user!");
             return;
           }
 

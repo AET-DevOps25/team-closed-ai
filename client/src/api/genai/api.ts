@@ -250,7 +250,7 @@ export const GenAIApiAxiosParamCreator = function (configuration?: Configuration
          * @throws {RequiredError}
          */
         healthHealthzGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/genai/healthz`;
+            const localVarPath = `/healthz`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -283,7 +283,7 @@ export const GenAIApiAxiosParamCreator = function (configuration?: Configuration
         interpretInterpretPost: async (promptRequest: PromptRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'promptRequest' is not null or undefined
             assertParamExists('interpretInterpretPost', 'promptRequest', promptRequest)
-            const localVarPath = `/genai/interpret`;
+            const localVarPath = `/interpret`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

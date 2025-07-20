@@ -92,6 +92,8 @@ spec:
         fsGroup: 65534
         runAsUser: 65534
         runAsNonRoot: true
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
       - name: prometheus
         image: "{{ .Values.prometheus.image.repository }}:{{ .Values.prometheus.image.tag }}"
