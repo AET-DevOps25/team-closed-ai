@@ -1,6 +1,6 @@
-# React + TypeScript + Vite
+# ClosedAI Client
 
-This is the client for the ClosedId application build during the DevOps course.
+This is the client for the ClosedAI application, build during the DevOps course.
 
 The frontend runs locally at: http://localhost:5173/
 
@@ -36,10 +36,22 @@ npm run dev:prod
 
 ## OpenAPI Client Generation
 
-To generate/update the clients for the server, use the following command in the client directory:
+To generate/update the clients for the server and gen AI service, use the following command in the client directory:
 
 ```
-openapi-generator generate -i ../server/openapi.yaml -o src/api -g typescript-axios --skip-validate-spec
+sh generate-clients.sh
+```
+
+or to create the clients individually:
+
+```
+openapi-generator generate -i ../server/openapi.yaml -o src/api/server -g typescript-axios --skip-validate-spec
+```
+
+and
+
+```
+openapi-generator generate -i ../genai/openapi.yaml -o src/apigenai -g typescript-axios --skip-validate-spec
 ```
 
 ## UI library

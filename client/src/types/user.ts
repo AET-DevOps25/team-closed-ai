@@ -1,3 +1,3 @@
-import type { UserDto } from "@/api/api";
+import type { UserDto } from "@/api/server";
 
 export type User = UserDto;

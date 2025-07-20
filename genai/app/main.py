@@ -5,6 +5,7 @@ import sys
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import Response
+from fastapi.middleware.cors import CORSMiddleware
 from models.base import PromptRequest, GenAIResponse
 from chain.classification import classify_prompt
 from models.intent import IntentType
@@ -16,6 +17,7 @@ import metrics.metrics as metrics
 logger = logging.getLogger("GenAI Kanban Assistant")
 logging.basicConfig(level=logging.INFO)
 
+
 app = FastAPI(
     title="GenAI Kanban Assistant",
     description="AI-powered service for intelligent Kanban task management and question answering",
@@ -26,6 +28,17 @@ app = FastAPI(
             "description": "AI prompt interpretation for task generation and question answering",
         },
     ],
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://closed-ai.student.k8s.aet.cit.tum.de",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -46,9 +59,26 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/metrics")
+@app.get(
+    "/metrics",
+    tags=["Health"],
+    summary="Prometheus Metrics",
+    description="Returns Prometheus metrics for monitoring the GenAI service performance and usage",
+    responses={
+        200: {
+            "description": "Prometheus metrics in text format",
+            "content": {
+                "text/plain": {
+                    "example": "# HELP classification_time_seconds Time spent on prompt classification\n# TYPE classification_time_seconds histogram\nclassification_time_seconds_bucket{le=\"0.1\"} 0.0\n..."
+                }
+            },
+        }
+    },
+)
 def get_metrics():
-    """Prometheus metrics endpoint"""
+    """
+    Prometheus metrics endpoint for monitoring service performance.
+    """
     data = generate_latest()
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 

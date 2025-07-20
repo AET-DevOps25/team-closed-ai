@@ -107,7 +107,7 @@ export function UserProfileFooter({}: UserProfileFooterProps) {
                     >
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={u.profilePicture} alt={u.name} />
-                        <AvatarFallback className="text-xs">
+                        <AvatarFallback className="bg-gray-200 text-xs">
                           {u.name
                             .split(" ")
                             .map((n) => n[0])

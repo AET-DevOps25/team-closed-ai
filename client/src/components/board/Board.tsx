@@ -1,14 +1,24 @@
 import { useState } from "react";
-import { DragDropContext } from "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-migration";
+import {
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { useBoard } from "@/context/BoardContext";
 import Column from "@/components/board/Column";
 import CreateTaskDialog from "@/components/board/CreateTaskDialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RefreshCw, Plus, AlertCircle } from "lucide-react";
-import type { Project, TaskStatus } from "@/types";
+import { type TaskStatus, type Project } from "@/types";
 import { SidebarTrigger } from "../ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import TaskCard from "@/components/board/TaskCard";
 
 interface BoardProps {
   selectedProject: Project | null;
@@ -16,19 +26,46 @@ interface BoardProps {
 
 const Board = ({ selectedProject }: BoardProps) => {
   const isMobile = useIsMobile();
-  const { tasks, moveTask, loading, error, refetch } = useBoard();
+  const { tasks, moveTask, loading, error, refetch, getTaskById } = useBoard();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const handleDragEnd = async (result: {
-    destination: any;
-    draggableId?: any;
-  }) => {
-    if (!result.destination) return;
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+  );
 
-    const { draggableId, destination } = result;
-    const newState = destination.droppableId as TaskStatus;
-    await moveTask(draggableId, newState);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const taskId = parseInt(active.id as string);
+    const newStatus = over.id as TaskStatus;
+
+    const validStatuses: TaskStatus[] = [
+      "BACKLOG",
+      "OPEN",
+      "IN_PROGRESS",
+      "DONE",
+    ];
+    if (!validStatuses.includes(over.id as TaskStatus)) {
+      setActiveId(null);
+      return;
+    }
+
+    await moveTask(taskId, newStatus);
+    setActiveId(null);
   };
 
   const handleRefresh = async () => {
@@ -58,7 +95,7 @@ const Board = ({ selectedProject }: BoardProps) => {
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: selectedProject.color || "#9ca3af" }}
               />
-              <h1 className="text-2xl font-bold truncate">
+              <h1 className="text-2xl font-bold truncate text-foreground">
                 {selectedProject.name}
               </h1>
             </>
@@ -69,7 +106,7 @@ const Board = ({ selectedProject }: BoardProps) => {
           )}
         </div>
         {loading && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <RefreshCw className="h-6 w-6 animate-spin" />
             <span>Loading board data...</span>
           </div>
@@ -104,7 +141,11 @@ const Board = ({ selectedProject }: BoardProps) => {
         </Alert>
       )}
 
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[calc(100%-4rem)]">
           <Column title="Backlog" state="BACKLOG" tasks={backlogTasks} />
           <Column title="Open" state="OPEN" tasks={openTasks} />
@@ -115,7 +156,17 @@ const Board = ({ selectedProject }: BoardProps) => {
           />
           <Column title="Done" state="DONE" tasks={doneTasks} />
         </div>
-      </DragDropContext>
+
+        <DragOverlay>
+          {activeId ? (
+            <TaskCard
+              task={getTaskById(parseInt(activeId))!}
+              index={0}
+              isDragOverlay
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       <CreateTaskDialog
         isOpen={isCreateDialogOpen}

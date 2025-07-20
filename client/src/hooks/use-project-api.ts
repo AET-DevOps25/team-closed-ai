@@ -5,8 +5,8 @@ import {
   type CreateProjectDto,
   type AddTaskDto,
   type TaskDto,
-} from "../api/api";
-import { Configuration } from "../api/configuration";
+  Configuration,
+} from "@/api/server";
 import { type ApiState, createInitialApiState } from "../types/api";
 import { useApi } from "./use-api";
 
@@ -18,14 +18,14 @@ interface ProjectApiHook {
   projects: ApiState<ProjectDto[]>;
   project: ApiState<ProjectDto>;
   createdProject: ApiState<ProjectDto>;
-  createdTask: ApiState<TaskDto>;
+  createdTasks: ApiState<TaskDto[]>;
 
   getAllProjects: () => Promise<void>;
   getProjectById: (id: number) => Promise<void>;
   createProject: (data: CreateProjectDto) => Promise<void>;
   updateProject: (id: number, data: ProjectDto) => Promise<void>;
   deleteProject: (id: number) => Promise<void>;
-  addTaskToProject: (projectId: number, data: AddTaskDto) => Promise<void>;
+  addTasksToProject: (projectId: number, data: AddTaskDto[]) => Promise<void>;
 
   clearErrors: () => void;
   resetState: () => void;
@@ -43,7 +43,7 @@ export const useProjectApi = (): ProjectApiHook => {
   const [createdProject, setCreatedProject] = useState<ApiState<ProjectDto>>(
     createInitialApiState,
   );
-  const [createdTask, setCreatedTask] = useState<ApiState<TaskDto>>(
+  const [createdTasks, setCreatedTasks] = useState<ApiState<TaskDto[]>>(
     createInitialApiState,
   );
 
@@ -97,11 +97,11 @@ export const useProjectApi = (): ProjectApiHook => {
     [handleVoidApiCall, getAllProjects],
   );
 
-  const addTaskToProject = useCallback(
-    async (projectId: number, data: AddTaskDto) => {
+  const addTasksToProject = useCallback(
+    async (projectId: number, data: AddTaskDto[]) => {
       await handleApiCall(
-        () => projectApi.addTaskToProject(projectId, data),
-        setCreatedTask,
+        () => projectApi.addTasksToProject(projectId, data),
+        setCreatedTasks,
       );
     },
     [handleApiCall],
@@ -111,27 +111,27 @@ export const useProjectApi = (): ProjectApiHook => {
     setProjects((prev) => ({ ...prev, error: null }));
     setProject((prev) => ({ ...prev, error: null }));
     setCreatedProject((prev) => ({ ...prev, error: null }));
-    setCreatedTask((prev) => ({ ...prev, error: null }));
+    setCreatedTasks((prev) => ({ ...prev, error: null }));
   }, []);
 
   const resetState = useCallback(() => {
     setProjects(createInitialApiState());
     setProject(createInitialApiState());
     setCreatedProject(createInitialApiState());
-    setCreatedTask(createInitialApiState());
+    setCreatedTasks(createInitialApiState());
   }, []);
 
   return {
     projects,
     project,
     createdProject,
-    createdTask,
+    createdTasks,
     getAllProjects,
     getProjectById,
     createProject,
     updateProject,
     deleteProject,
-    addTaskToProject,
+    addTasksToProject,
     clearErrors,
     resetState,
   };
