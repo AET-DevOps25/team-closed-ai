@@ -14,6 +14,8 @@ describe("Type Mappers", () => {
       id: 1,
       name: "John Doe",
       profilePicture: "avatar.jpg",
+      createdAt: "2023-01-01T00:00:00Z",
+      updatedAt: "2023-01-01T00:00:00Z",
     };
 
     // Act
@@ -30,6 +32,8 @@ describe("Type Mappers", () => {
       name: "Test Project",
       color: "#FF0000",
       taskIds: [1, 2, 3],
+      createdAt: "2023-01-01T00:00:00Z",
+      updatedAt: "2023-01-01T00:00:00Z",
     };
 
     // Act
@@ -49,6 +53,8 @@ describe("Type Mappers", () => {
       name: "Empty Project",
       color: "#00FF00",
       taskIds: [],
+      createdAt: "2023-01-01T00:00:00Z",
+      updatedAt: "2023-01-01T00:00:00Z",
     };
 
     // Act
@@ -64,6 +70,9 @@ describe("Type Mappers", () => {
       id: 3,
       name: "No Tasks Project",
       color: "#0000FF",
+      taskIds: [],
+      createdAt: "2023-01-01T00:00:00Z",
+      updatedAt: "2023-01-01T00:00:00Z",
     };
 
     // Act
@@ -76,8 +85,20 @@ describe("Type Mappers", () => {
   it("should map TaskDto to Task with assignee", () => {
     // Arrange
     const users: User[] = [
-      { id: 1, name: "John Doe", profilePicture: "john.jpg" },
-      { id: 2, name: "Jane Smith", profilePicture: "jane.jpg" },
+      { 
+        id: 1, 
+        name: "John Doe", 
+        profilePicture: "john.jpg",
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+      },
+      { 
+        id: 2, 
+        name: "Jane Smith", 
+        profilePicture: "jane.jpg",
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+      },
     ];
     const taskDto: TaskDto = {
       id: 1,
@@ -85,9 +106,10 @@ describe("Type Mappers", () => {
       description: "Task description",
       taskStatus: "OPEN",
       assigneeId: 1,
-      projectId: 1,
       createdAt: "2023-01-01T00:00:00Z",
       updatedAt: "2023-01-01T00:00:00Z",
+      comments: [],
+      attachments: [],
     };
 
     // Act
@@ -102,16 +124,23 @@ describe("Type Mappers", () => {
   it("should map TaskDto to Task without assignee when assigneeId is missing", () => {
     // Arrange
     const users: User[] = [
-      { id: 1, name: "John Doe", profilePicture: "john.jpg" },
+      { 
+        id: 1, 
+        name: "John Doe", 
+        profilePicture: "john.jpg",
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+      },
     ];
     const taskDto: TaskDto = {
       id: 2,
       title: "Unassigned Task",
       description: "No assignee",
       taskStatus: "BACKLOG",
-      projectId: 1,
       createdAt: "2023-01-01T00:00:00Z",
       updatedAt: "2023-01-01T00:00:00Z",
+      comments: [],
+      attachments: [],
     };
 
     // Act
@@ -124,7 +153,13 @@ describe("Type Mappers", () => {
   it("should map TaskDto to Task without assignee when user not found", () => {
     // Arrange
     const users: User[] = [
-      { id: 1, name: "John Doe", profilePicture: "john.jpg" },
+      { 
+        id: 1, 
+        name: "John Doe", 
+        profilePicture: "john.jpg",
+        createdAt: "2023-01-01T00:00:00Z",
+        updatedAt: "2023-01-01T00:00:00Z",
+      },
     ];
     const taskDto: TaskDto = {
       id: 3,
@@ -132,9 +167,10 @@ describe("Type Mappers", () => {
       description: "Assignee does not exist",
       taskStatus: "IN_PROGRESS",
       assigneeId: 999,
-      projectId: 1,
       createdAt: "2023-01-01T00:00:00Z",
       updatedAt: "2023-01-01T00:00:00Z",
+      comments: [],
+      attachments: [],
     };
 
     // Act
