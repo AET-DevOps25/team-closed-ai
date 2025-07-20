@@ -37,6 +37,8 @@ spec:
       labels:
         app: postgres
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
         - name: postgres
           image: 'pgvector/pgvector:pg16'

@@ -16,6 +16,8 @@ spec:
       annotations:
         redeployAt: "{{ now | unixEpoch }}"
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: genai-service
           image: "{{ $.Values.services.genai.image.repository }}:{{ $.Values.services.genai.image.tag }}"
