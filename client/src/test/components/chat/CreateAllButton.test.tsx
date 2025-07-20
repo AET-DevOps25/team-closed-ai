@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { CreateAllButton } from '@/components/chat/CreateAllButton';
 
@@ -14,7 +14,9 @@ describe('CreateAllButton', () => {
     const mockOnCreateAll = vi.fn().mockResolvedValue(undefined);
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
-    fireEvent.click(screen.getByText('Create All'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Create All'));
+    });
     
     expect(mockOnCreateAll).toHaveBeenCalledOnce();
   });
@@ -23,7 +25,9 @@ describe('CreateAllButton', () => {
     const mockOnCreateAll = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
-    fireEvent.click(screen.getByText('Create All'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Create All'));
+    });
     
     expect(screen.getByText('Creating...')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeDisabled();
@@ -37,7 +41,9 @@ describe('CreateAllButton', () => {
     const mockOnCreateAll = vi.fn().mockResolvedValue(undefined);
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
-    fireEvent.click(screen.getByText('Create All'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Create All'));
+    });
     
     await waitFor(() => {
       expect(screen.getByText('Created')).toBeInTheDocument();
@@ -50,7 +56,9 @@ describe('CreateAllButton', () => {
     const mockOnCreateAll = vi.fn().mockRejectedValue(new Error('Create failed'));
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
-    fireEvent.click(screen.getByText('Create All'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Create All'));
+    });
     
     await waitFor(() => {
       expect(screen.getByText('Create All')).toBeInTheDocument();
@@ -66,8 +74,22 @@ describe('CreateAllButton', () => {
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
     const button = screen.getByText('Create All');
+    
+    // First click
     fireEvent.click(button);
-    fireEvent.click(button); // Second click should be ignored
+    
+    // Immediately try second click while first is processing
+    fireEvent.click(button); 
+    
+    // Wait for the button to show "Creating..."
+    await waitFor(() => {
+      expect(screen.getByText('Creating...')).toBeInTheDocument();
+    });
+    
+    // After processing completes, should only have been called once
+    await waitFor(() => {
+      expect(screen.getByText('Created')).toBeInTheDocument();
+    });
     
     expect(mockOnCreateAll).toHaveBeenCalledOnce();
   });
@@ -77,14 +99,18 @@ describe('CreateAllButton', () => {
     render(<CreateAllButton onCreateAll={mockOnCreateAll} />);
     
     // First click
-    fireEvent.click(screen.getByText('Create All'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Create All'));
+    });
     
     await waitFor(() => {
       expect(screen.getByText('Created')).toBeInTheDocument();
     });
     
     // Try to click again
-    fireEvent.click(screen.getByText('Created'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Created'));
+    });
     
     expect(mockOnCreateAll).toHaveBeenCalledOnce(); // Should still be only one call
   });

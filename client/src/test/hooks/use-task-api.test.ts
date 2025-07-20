@@ -17,7 +17,6 @@ vi.mock("@/api/server", () => ({
   TaskApi: vi.fn().mockImplementation(() => ({
     getAllTasks: vi.fn(),
     getTaskById: vi.fn(),
-    createTask: vi.fn(),
     updateTask: vi.fn(),
     deleteTask: vi.fn(),
     changeTaskStatus: vi.fn(),

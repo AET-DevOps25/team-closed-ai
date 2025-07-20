@@ -6,8 +6,8 @@ const TestButton = ({ onClick }: { onClick?: () => void }) => (
   <button onClick={onClick}>Test</button>
 );
 
-const TestInput = ({ value, onChange }: { value?: string; onChange?: (e: any) => void }) => (
-  <input value={value} onChange={onChange} />
+const TestInput = ({ value, defaultValue, onChange }: { value?: string; defaultValue?: string; onChange?: (e: any) => void }) => (
+  <input value={value} defaultValue={defaultValue} onChange={onChange} />
 );
 
 const TestList = ({ items }: { items: string[] }) => (
@@ -73,7 +73,7 @@ describe('Basic Component Functionality', () => {
     render(
       <div>
         <TestButton />
-        <TestInput value="test" />
+        <TestInput defaultValue="test" />
         <TestList items={['A', 'B']} />
       </div>
     );
