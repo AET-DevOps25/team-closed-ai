@@ -15,7 +15,7 @@ const ProjectCard = ({ project, isSelected, onSelect }: ProjectCardProps) => {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${project.name}"?`)) {
+    if (confirm(`Are you really sure you want to delete "${project.name}"?`)) {
       await deleteProject(project.id);
     }
   };
